@@ -956,6 +956,180 @@ const QUESTIONS = [
     correct: 1,
     explanation: "The 2020 ACC/AHA valvular heart disease guideline supports surgery (Class 2a) in asymptomatic patients with chronic severe AR and preserved LVEF once the LV has become significantly dilated from chronic volume overload — LVESD &gt;50 mm, or indexed LVESD &gt;25 mm/m² — as its own indication, independent of whether LVEF or symptoms would separately trigger surgery. The rationale is that waiting for EF to fall or symptoms to appear, as in A and C, risks missing the point at which chronic volume overload has already caused LV remodeling that may not fully reverse after valve surgery; the dilation threshold exists to prompt earlier intervention. D is wrong because the guideline does define specific echocardiographic triggers (LV dimension and function thresholds) at which ongoing surveillance should give way to intervention.",
     source: "ACC/AHA. 2020 Guideline for the Management of Patients With Valvular Heart Disease — aortic regurgitation section (Class 2a: asymptomatic severe AR with LVESD &gt;50 mm or indexed &gt;25 mm/m²)."
+  },
+  {
+    id: "w9mon",
+    date: "2026-10-19",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Foundational Recognition",
+    topic: "Temporary Epicardial Pacing — Choosing the Mode",
+    stem: "On post-op day 1 after CABG, a patient with temporary atrial and ventricular epicardial wires in place is noted to be in sinus rhythm at 55 bpm with normal, 1:1 AV conduction and a narrow QRS. The patient is hypotensive with cool extremities, consistent with low cardiac output from the bradycardia.\n\nWhich temporary pacing mode is the most appropriate first choice to improve cardiac output?",
+    options: [
+      "VVI pacing at 90 bpm",
+      "AAI pacing at 90 bpm",
+      "DDD pacing at 60 bpm with a long AV delay",
+      "VOO pacing at 100 bpm"
+    ],
+    correct: 1,
+    explanation: "With AV conduction intact, atrial-only pacing (AAI) preserves the atrial kick and lets the patient's own conduction system activate the ventricle, maximizing ventricular filling and synchrony — this is the preferred first-line mode when the problem is sinus bradycardia with normal conduction. VVI paces the ventricle only, discarding the atrial contribution to filling and risking AV dyssynchrony even though it would raise the rate. DDD with a long AV delay adds unnecessary complexity and still risks AV dyssynchrony or wire competition when simple atrial pacing will do the job. VOO is asynchronous ventricular pacing that competes with the intrinsic rhythm and carries R-on-T risk, and like VVI, discards atrial kick entirely."
+  },
+  {
+    id: "w9tue",
+    date: "2026-10-20",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Applied Transfusion Pharmacology",
+    topic: "Viscoelastic (TEG) Pattern-Directed Transfusion",
+    stem: "A patient returns to the CTICU after a complex valve operation with brisk mediastinal chest-tube output. A bedside thromboelastogram (TEG) shows a prolonged R time with a normal angle and a normal maximum amplitude (MA).\n\nBased on this pattern alone, which product should be given first?",
+    options: [
+      "Cryoprecipitate",
+      "Platelets",
+      "Fresh frozen plasma (FFP)",
+      "Protamine"
+    ],
+    correct: 2,
+    explanation: "A prolonged R time reflects delayed clot initiation from a deficiency of soluble clotting factors, which is corrected with FFP (or factor concentrates); the normal angle and normal MA argue against a fibrinogen or platelet-function problem, so cryoprecipitate (which targets a low angle/fibrinogen) and platelets (which target a low MA) are not the first move here. Protamine treats a residual heparin effect, which this pattern does not suggest and which is read off a different (heparinase-corrected) TEG channel. Goal-directed transfusion algorithms that incorporate point-of-care viscoelastic testing carry a Class I, Level B-R recommendation for reducing periprocedural bleeding and transfusion in cardiac surgical patients.",
+    source: "Tibi P, McClure RS, Huang J, et al. STS/SCA/AmSECT/SABM Updated Clinical Practice Guidelines: Patient Blood Management. Ann Thorac Surg. 2021;112:981-1004 — POC Hemostasis Testing section / Table 2 (Transfusion algorithms), Class I, Level B-R, confirmed via a second targeted fetch."
+  },
+  {
+    id: "w9wed",
+    date: "2026-10-21",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Acid-Base Reasoning on Mechanical Support",
+    topic: "Type A vs. Type B Lactic Acidosis on VA-ECMO",
+    stem: "A patient is on peripheral VA-ECMO post-cardiotomy with an appropriately sized flow of 4.5 L/min, MAP 72 mmHg, SvO2 78%, warm extremities, and adequate urine output — reassuring numbers for global perfusion. Despite this, serial lactate has risen from 2.1 to 6.8 mmol/L over the past 12 hours.\n\nWhat is the most appropriate next step?",
+    options: [
+      "Empirically increase ECMO flow, since any rising lactate on ECMO reflects inadequate oxygen delivery until proven otherwise",
+      "Reassure the team that a lactate this high cannot reflect anything other than a cardiac cause",
+      "Recognize that this pattern does not fit classic type A (hypoperfusion) lactic acidosis, and evaluate for type B causes (e.g., thiamine deficiency, hepatic dysfunction, or a contributing medication) while still checking for a regional perfusion problem such as differential hypoxia or limb ischemia",
+      "Treat empirically with intravenous sodium bicarbonate to lower the lactate level directly"
+    ],
+    correct: 2,
+    explanation: "Type A lactic acidosis reflects a clear impairment of tissue oxygen delivery — hypoperfusion, hypoxemia, low flow — which this patient's hemodynamics argue against, so the pattern should prompt consideration of type B causes: systemic oxygenation is preserved, but lactate is still generated or cleared abnormally (thiamine deficiency, hepatic insufficiency, malignancy, or a contributing drug/toxin). Assuming a type A process must be present on ECMO would escalate flow without addressing the actual cause. Reassuring global numbers do not exclude a regional problem — a differential hypoxia/limb malperfusion check is still worthwhile alongside the type B workup. Treating the lab value itself with bicarbonate rather than its cause does not change management.",
+    source: "Fenves AZ, Emmett M. \"Approach to Patients With High Anion Gap Metabolic Acidosis.\" Core Curriculum 2021. Am J Kidney Dis. 2021;78(4), p. 592."
+  },
+  {
+    id: "w9thu",
+    date: "2026-10-22",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Mechanical Circulatory Support Escalation",
+    topic: "Refractory RV Failure After LVAD Implantation",
+    stem: "Six hours after durable LVAD implantation, a patient develops acute right ventricular failure: CVP rising to 22 mmHg, pulmonary artery pressures falling, LVAD flows becoming preload-dependent and labile, and a falling cardiac index despite optimized pump speed, inotropic support, and inhaled pulmonary vasodilator therapy.\n\nWhat is the most appropriate next step?",
+    options: [
+      "Increase LVAD pump speed further to augment left-sided flow and indirectly decompress the right ventricle",
+      "Add vasopressin as the definitive therapy and hold further escalation",
+      "Proceed to temporary mechanical right ventricular support (e.g., a temporary RVAD such as CentriMag or ProtekDuo)",
+      "Convert emergently to peripheral VA-ECMO as the first-line therapy for isolated RV failure"
+    ],
+    correct: 2,
+    explanation: "When maximal medical therapy — inotropes, inhaled pulmonary vasodilators, optimized volume status — fails to support refractory acute RV failure after LVAD implantation, temporary mechanical RV support is the appropriate next step: it directly unloads the RV and buys time for recovery while the new LVAD circuit becomes established. Increasing LVAD speed further is not the fix here — further LV decompression shifts the interventricular septum further leftward, which distorts RV geometry and can impair the septal contribution to RV contraction, worsening rather than relieving RV failure. Vasopressin can be a useful adjunct — it raises systemic and RV coronary perfusion pressure without increasing pulmonary vascular resistance — but it is not a substitute for mechanical support once medical therapy is already maximized and failing. VA-ECMO can provide biventricular support but is generally reserved for combined cardiopulmonary failure or when isolated RV support is insufficient, not chosen first-line for isolated RV failure with an already-functioning LVAD."
+  },
+  {
+    id: "w9fri",
+    date: "2026-10-23",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Applied Quantitative Physiology",
+    topic: "Calculating Oxygen Delivery on VA-ECMO",
+    stem: "A patient on VA-ECMO has a circuit flow of 4.0 L/min, a post-oxygenator (arterial limb) saturation of 100%, and a hemoglobin of 9 g/dL. Using CaO2 (mL O2/dL) ≈ 1.34 × Hgb × SaO2 (ignoring the small dissolved-oxygen term at a normal PaO2), approximately how much oxygen is the ECMO circuit alone delivering per minute?",
+    options: [
+      "~120 mL O2/min",
+      "~240 mL O2/min",
+      "~480 mL O2/min",
+      "~960 mL O2/min"
+    ],
+    correct: 2,
+    explanation: "CaO2 = 1.34 × 9 g/dL × 1.0 = 12.06 mL O2/dL of blood, which converts to about 120.6 mL O2 per liter of blood (dL → L is a ×10 conversion that is the most common source of error in this calculation). Multiplying by the ECMO flow of 4.0 L/min gives a delivered oxygen (DO2) of roughly 480 mL O2/min. The 120 mL/min option reflects forgetting the dL-to-L conversion; 240 and 960 mL/min reflect a simple halving or doubling arithmetic slip rather than a conceptual error. This calculation is the same framework used to judge whether oxygen delivery is adequate relative to the patient's oxygen consumption (VO2) during a weaning trial, and it illustrates that hemoglobin — not only flow — is a direct lever for oxygen delivery on ECMO."
+  },
+  {
+    id: "w10mon",
+    date: "2026-10-26",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Foundational Pharmacology",
+    topic: "The Diuretic \"Braking Phenomenon\"",
+    stem: "A patient is recovering in the CTICU after CABG with significant volume overload. An IV furosemide infusion has been escalated over 48 hours, but urine output has progressively declined despite near-maximal loop-diuretic dosing.\n\nWhat is the best next step, and why?",
+    options: [
+      "Switch from furosemide to an equivalent dose of bumetanide, since tolerance develops to one loop diuretic specifically",
+      "Add a thiazide-type diuretic such as metolazone, since chronic loop-diuretic blockade causes the distal convoluted tubule to upregulate its sodium-chloride cotransporter (NCC), and blocking this compensatory reabsorption restores natriuresis",
+      "Add acetazolamide, since the plateau reflects proximal tubule hypertrophy from chronic loop-diuretic use",
+      "Increase the furosemide infusion rate further, since a high enough loop-diuretic dose will eventually overcome any degree of tubular adaptation"
+    ],
+    correct: 1,
+    explanation: "The \"braking phenomenon\" describes how the initially robust natriuretic response to a loop diuretic wanes as effective circulating volume falls — driven by renin-angiotensin-system activation and compensatory remodeling of the distal nephron: chronic blockade of NKCC2 (the Na⁺-K⁺-2Cl⁻ cotransporter) at the loop of Henle upregulates NCC (the sodium-chloride cotransporter) in the distal convoluted tubule, so more of the sodium that escapes the blocked loop segment gets reabsorbed downstream. Adding a thiazide blocks this compensatory pathway (sequential nephron blockade), which is the physiologic rationale for adding metolazone to maximal-dose loop diuretics. Switching loop diuretics within the same class will not fix this, because braking is a nephron-adaptation phenomenon shared by all loop diuretics, not a drug-specific tolerance. Acetazolamide acts on a different segment (proximal tubule/collecting duct bicarbonate reabsorption) not implicated in this adaptation, and would instead risk a non-gap hyperchloremic metabolic acidosis. Raising the loop-diuretic dose further does not address the actual mechanism, since the plateau reflects downstream tubular compensation, not insufficient dose.",
+    source: "Novak JE, Ellison DH. \"Diuretics in States of Volume Overload: Core Curriculum 2022.\" Am J Kidney Dis. Vol 80, Iss 2, August 2022, p. 272."
+  },
+  {
+    id: "w10tue",
+    date: "2026-10-27",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Applied Hematology / Anticoagulation",
+    topic: "Heparin-Induced Thrombocytopenia After Cardiac Surgery",
+    stem: "On post-op day 5 after CABG, a patient's platelet count has fallen from 210 to 90 ×10⁹/L, and a new lower-extremity DVT is found on ultrasound. The LLL (Lillo-Le Louët) score — a pretest-probability score developed specifically for HIT after cardiopulmonary bypass, where the universal post-op platelet drop makes the general-ICU 4Ts score unreliable — is high, and heparin-induced thrombocytopenia (HIT) antibody testing has been sent but is not yet back. The patient still requires systemic anticoagulation.\n\nWhich is the most appropriate anticoagulant to start now, while confirmatory testing is pending?",
+    options: [
+      "Resume unfractionated heparin at a lower dose until the antibody test result returns",
+      "Start enoxaparin (a low molecular weight heparin) as a heparin-sparing alternative",
+      "Start a non-heparin anticoagulant, such as argatroban or bivalirudin",
+      "Start warfarin immediately to begin definitive long-term anticoagulation"
+    ],
+    correct: 2,
+    explanation: "Once HIT is clinically suspected (as supported here by a high LLL score — the scoring tool validated for this exact post-cardiopulmonary-bypass setting, unlike the 4Ts score, which was derived in general ICU populations and performs poorly against the near-universal post-op platelet dip after cardiac surgery — plus a new thrombotic event), all heparin products must be stopped and avoided, and a non-heparin parenteral anticoagulant — a direct thrombin inhibitor (argatroban or bivalirudin) or a factor Xa inhibitor — is started empirically without waiting for antibody confirmation, since delaying treatment risks ongoing antibody-mediated platelet activation and thrombosis. Even a reduced heparin dose continues to drive the same antibody-mediated process. Low molecular weight heparin cross-reacts with HIT antibodies in vitro and is not a safe substitute. Starting warfarin during the acute thrombocytopenic phase of HIT can precipitate venous limb gangrene or warfarin-induced skin necrosis (from a transient drop in protein C activity before the vitamin K-dependent factors fall); warfarin is only started after platelet count recovery, with adequate overlap on a non-heparin parenteral agent."
+  },
+  {
+    id: "w10wed",
+    date: "2026-10-28",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Applied Pharmacology — Refractory Shock",
+    topic: "Methylene Blue vs. Hydroxocobalamin for Vasoplegic Syndrome",
+    stem: "A patient remains profoundly hypotensive after cardiopulmonary bypass despite high-dose norepinephrine and vasopressin, with a normal-to-high cardiac index and a markedly low systemic vascular resistance — a picture consistent with vasoplegic syndrome. The team adds a third agent that acts directly on the nitric oxide pathway.\n\nWhich best describes the mechanism of methylene blue in this setting?",
+    options: [
+      "Direct stimulation of alpha-1 adrenergic receptors to increase vascular smooth-muscle tone",
+      "Inhibition of guanylate cyclase, blocking the nitric oxide–cGMP signaling pathway responsible for vasodilation",
+      "Direct scavenging of circulating nitric oxide and hydrogen sulfide, preventing their vasodilatory effect",
+      "Agonism at vasopressin V1 receptors, acting as a synthetic vasopressin analog"
+    ],
+    correct: 1,
+    explanation: "Methylene blue inhibits guanylate cyclase, the enzyme that nitric oxide activates to generate cGMP — the second messenger that relaxes vascular smooth muscle — so blocking this enzyme restores vascular tone in nitric-oxide-mediated vasoplegia. Direct scavenging of nitric oxide and hydrogen sulfide describes the mechanism of a different rescue agent, hydroxocobalamin (vitamin B12a), rather than the downstream signaling enzyme that methylene blue blocks; the two agents are frequently confused for exactly this reason. Methylene blue has no direct adrenergic receptor activity — its pressor effect is entirely indirect, via the nitric oxide pathway. It also has no vasopressin-receptor activity and is pharmacologically unrelated to vasopressin."
+  },
+  {
+    id: "w10thu",
+    date: "2026-10-29",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Mechanical Circulatory Support — Trial Evidence",
+    topic: "Escalation of Mechanical Support in the DanGer Shock Trial",
+    stem: "A post hoc analysis of the DanGer Shock trial examined patients with STEMI-related cardiogenic shock who required escalation to a higher level of temporary mechanical circulatory support (tMCS) beyond their originally randomized therapy — comparing patients initially randomized to a micro-axial flow pump (mAFP, e.g., Impella CP) against those randomized to standard of care without upfront mAFP.\n\nWhich statement best reflects that analysis's key finding?",
+    options: [
+      "Escalation to higher-level tMCS occurred more often, and sooner, in patients already supported with an mAFP than in those on standard care",
+      "Patients who required escalation from the standard-of-care arm had the highest 180-day mortality of any group, while mortality among patients escalated from the mAFP arm was similar to that of non-escalated standard-of-care patients",
+      "Baseline lactate predicted the need for escalation equally well in both treatment arms",
+      "Escalation to higher-level tMCS was associated with improved survival in both arms, compared with patients who did not require escalation"
+    ],
+    correct: 1,
+    explanation: "In this post hoc analysis, escalation to higher-level tMCS was less frequent in the mAFP arm (25/179, 14%) than in the standard-of-care arm (35/176, 20%; adjusted OR 0.52, 95% CI 0.30-0.91), and occurred much later when it did happen (median 12 h vs. 0.7 h, p&lt;0.001). Mortality was highest among patients escalated from standard of care (80.0%), while patients escalated from the mAFP arm had a mortality risk (60.0%) comparable to non-escalated standard-of-care patients (53.2%) — suggesting that failing to start with upfront LV unloading, rather than escalation itself, is what tracked with the worst outcomes. This is the opposite of what the first option claims. Baseline lactate predicted escalation in the standard-of-care arm (OR 1.80, 95% CI 1.14-3.13) but not in the mAFP arm (interaction p&lt;0.01). Escalation was associated with higher, not improved, mortality overall (71.7% vs. 48.1% in non-escalated patients). As a single post hoc analysis of one trial, this is hypothesis-generating rather than an established standard of care, and the authors themselves call for future trials to define optimal escalation strategies.",
+    source: "Schrage B, Beske RP, Hassager C, et al. \"Escalation of mechanical circulatory support in patients with STEMI-related cardiogenic shock: a post hoc analysis of the DanGer Shock trial.\" Eur Heart J Acute Cardiovasc Care. 2026;15(6):466-474. doi:10.1093/ehjacc/zuag015."
+  },
+  {
+    id: "w10fri",
+    date: "2026-10-30",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Applied Hemodynamic Monitoring",
+    topic: "Thermodilution Cardiac Output Error in Severe Tricuspid Regurgitation",
+    stem: "A post-cardiac-surgery patient with known severe tricuspid regurgitation has a pulmonary artery catheter in place. A thermodilution cardiac output is measured, but the clinical picture — cool extremities, rising lactate, narrow pulse pressure — suggests more profound hypoperfusion than the number would imply.\n\nWhich statement correctly describes how severe tricuspid regurgitation affects thermodilution cardiac output measurement?",
+    options: [
+      "It typically causes thermodilution cardiac output to be falsely LOW, because recirculation of the cold indicator back and forth across the incompetent valve prolongs and flattens the downstream thermodilution curve, increasing its calculated area relative to the true forward flow",
+      "It has no meaningful effect on thermodilution accuracy",
+      "It typically causes thermodilution cardiac output to be falsely HIGH, because the regurgitant volume adds to the measured forward flow",
+      "It introduces random error with no consistent direction of bias"
+    ],
+    correct: 0,
+    explanation: "In severe tricuspid regurgitation, the injected cold indicator refluxes back and forth across the incompetent valve instead of passing forward as a single, well-defined bolus, which prolongs and flattens (widens) the downstream time-temperature curve. Because the thermodilution algorithm calculates cardiac output as inversely proportional to the area under that curve, a wider, flatter curve computes to a falsely LOW value relative to the true forward flow — which can make a clinician wrongly dismiss a hypoperfused patient's low-normal \"CO\" as reassuring. Tricuspid regurgitation is one of the best-recognized causes of thermodilution error, not a negligible one. The regurgitant fraction does not add to the forward-flow calculation; it is the prolonged curve clearance from recirculation that biases the result low, not high. The bias from tricuspid regurgitation is consistent and directional (toward underestimation), not random — which is exactly why a clinician who knows this should trust another cardiac output method (e.g., Fick, echocardiography) over thermodilution when significant tricuspid regurgitation is present."
   }
 ];
 
