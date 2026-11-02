@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HUMC CTICU Daily Question</title>
+<style>
+  :root {
+    --navy: #0b2545;
+    --blue: #1a5fb4;
+    --blue-light: #e8f0fb;
+    --green: #1c7c3f;
+    --green-light: #e7f6ec;
+    --red: #b3261e;
+    --red-light: #fbeae9;
+    --gray: #5b6472;
+    --gray-light: #f4f5f7;
+    --border: #dde2e8;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--gray-light);
+    color: #1c1f24;
+    line-height: 1.5;
+  }
+  header {
+    background: var(--navy);
+    color: white;
+    padding: 20px 16px 16px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0 0 4px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+  header p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #b9c7dd;
+  }
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  nav.days {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding: 12px 16px 0;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  nav.days button {
+    flex: 0 0 auto;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--gray);
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  nav.days button.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+  }
+  nav.days button.done::after {
+    content: " \2713";
+  }
+  .today-banner {
+    background: var(--blue-light);
+    border: 1px solid #c7dbf5;
+    color: var(--navy);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    margin-bottom: 14px;
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+  }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .level-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--blue-light);
+    color: var(--blue);
+  }
+  .day-label {
+    font-size: 0.78rem;
+    color: var(--gray);
+    font-weight: 600;
+  }
+  .topic {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 2px 0 12px;
+  }
+  .stem {
+    font-size: 0.98rem;
+    margin-bottom: 16px;
+    white-space: pre-line;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 13px;
+    cursor: pointer;
+    font-size: 0.92rem;
+    transition: border-color .15s, background .15s;
+  }
+  .option:hover { border-color: var(--blue); }
+  .option input { margin-top: 3px; }
+  .option.correct {
+    background: var(--green-light);
+    border-color: var(--green);
+  }
+  .option.incorrect {
+    background: var(--red-light);
+    border-color: var(--red);
+  }
+  .option.disabled { cursor: default; }
+  button.submit {
+    background: var(--blue);
+    color: white;
+    border: none;
+    padding: 11px 20px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+  }
+  button.submit:disabled {
+    background: #aebfd8;
+    cursor: not-allowed;
+  }
+  .feedback {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.right { background: var(--green-light); border: 1px solid var(--green); }
+  .feedback.wrong { background: var(--red-light); border: 1px solid var(--red); }
+  .feedback .fb-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .feedback .fb-title.right { color: var(--green); }
+  .feedback .fb-title.wrong { color: var(--red); }
+  .explanation {
+    margin-top: 10px;
+    font-size: 0.88rem;
+    color: #33393f;
+  }
+  .source {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--gray);
+    font-style: italic;
+    border-top: 1px dashed var(--border);
+    padding-top: 8px;
+  }
+  .no-source {
+    margin-top: 10px;
+    font-size: 0.75rem;
+    color: #9aa2ab;
+    font-style: italic;
+  }
+  footer {
+    text-align: center;
+    color: var(--gray);
+    font-size: 0.75rem;
+    padding: 24px 16px 40px;
+  }
+  .weekend-note {
+    text-align: center;
+    color: var(--gray);
+    font-size: 0.85rem;
+    padding: 6px 0 2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>HUMC CTICU Daily Question</h1>
+  <p>Cardiothoracic ICU educational quiz &mdash; one question a day, Monday&ndash;Friday</p>
+</header>
+
+<nav class="days" id="dayNav"></nav>
+
+<div class="wrap">
+  <div class="today-banner" id="todayBanner"></div>
+  <div class="card" id="quizCard"></div>
+</div>
+
+<footer>
+  Prepared for the HUMC CTICU Daily Question program.<br>
+  Sourced questions cite their reference directly; unmarked questions reflect general clinical knowledge.
+</footer>
+
+<script>
+const QUESTIONS = [
+  {
+    id: "mon",
+    date: "2026-08-24",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Foundational Recognition",
+    topic: "Post-Cardiac Surgery Mechanical Complications — Tamponade",
+    stem: "A CTICU nurse is monitoring a patient who is post-op day 0 from CABG. Over the past two hours she notes: chest tube output steady at 250 mL/hr, heart rate rising from 88 to 124 bpm, MAP falling from 78 to 62 mmHg, and CVP rising from 8 to 15 mmHg.\n\nWhich of the following is the most likely explanation for this trend?",
+    options: [
+      "Hypovolemic shock from ongoing blood loss",
+      "Cardiac tamponade",
+      "Septic shock",
+      "Acute pulmonary embolism"
+    ],
+    correct: 1,
+    explanation: "Cardiac tamponade is listed as a mechanical complication of cardiac surgery, diagnosed by clinical scenario and echocardiography and typically treated with surgical re-exploration. The rising CVP with falling MAP and tachycardia reflects impaired diastolic filling from accumulating pericardial/mediastinal blood — distinct from hypovolemic shock, which would show a falling CVP.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 6 (Surgery, Trauma, and Transplantation), p. 383."
+  },
+  {
+    id: "tue",
+    date: "2026-08-25",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Applied Diagnostics",
+    topic: "Echocardiographic Classification of Shock",
+    stem: "A hypotensive post-cardiac surgery patient undergoes bedside TTE. The study shows a large, poorly contractile left ventricle with no significant valvulopathy, small pericardial effusion, and a non-dilated IVC.\n\nWhich type of shock is most consistent with this echocardiographic picture?",
+    options: [
+      "Distributive shock",
+      "Hypovolemic shock",
+      "Cardiogenic shock",
+      "Obstructive shock"
+    ],
+    correct: 2,
+    explanation: "Cardiogenic shock is characterized echocardiographically by a large ventricle (or ventricles) with poor contractility, in contrast to hypovolemic shock (small chambers, normal/high contractility, collapsible IVC), distributive shock (small/normal chambers, preserved contractility), and obstructive shock (tamponade: small ventricles with dilated IVC; PE/pneumothorax: dilated RV).",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), p. 532, Table 7-42."
+  },
+  {
+    id: "wed",
+    date: "2026-08-26",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Device Management",
+    topic: "Mechanical Circulatory Support — IABP Waveform Troubleshooting",
+    stem: "An IABP is in place for cardiogenic shock. The bedside nurse notes the augmentation waveform begins before the dicrotic notch, obliterating its sharp downstroke.\n\nThis finding is most consistent with which timing error, and what is its physiologic consequence?",
+    options: [
+      "Late inflation — submaximal augmentation",
+      "Early inflation — increased afterload",
+      "Late deflation — submaximal augmentation",
+      "Early deflation — increased afterload"
+    ],
+    correct: 1,
+    explanation: "Inflation should begin at the dicrotic notch (aortic valve closure). Early inflation — before the notch — causes premature aortic valve closure and increased LV afterload. Late inflation causes submaximal augmentation. Early deflation also causes submaximal augmentation. Late deflation increases afterload by keeping the balloon inflated into the start of systole.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), p. 510."
+  },
+  {
+    id: "thu",
+    date: "2026-08-27",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Integrating Valve Pathophysiology with Device Selection",
+    topic: "IABP Contraindications in Valvular Disease",
+    stem: "A patient develops acute severe aortic regurgitation in cardiogenic shock while awaiting emergent valve surgery. A resident asks whether an IABP should be placed to stabilize hemodynamics in the interim.\n\nWhat is the most appropriate response?",
+    options: [
+      "Yes — IABP is first-line for any cardiogenic shock awaiting surgery",
+      "No — IABP is contraindicated in aortic regurgitation because diastolic augmentation increases regurgitant flow",
+      "Yes — IABP timing can be adjusted to avoid augmenting during regurgitation",
+      "No — IABP is contraindicated only in mitral regurgitation, not aortic regurgitation"
+    ],
+    correct: 1,
+    explanation: "Diastolic balloon inflation raises aortic diastolic pressure, which increases the pressure gradient driving blood backward across an incompetent aortic valve — worsening regurgitant volume and LV volume overload. Appropriate temporizing medical therapy prior to surgery instead includes nitroprusside for afterload reduction, dobutamine for inotropy, and isoproterenol for chronotropy.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), p. 519."
+  },
+  {
+    id: "fri",
+    date: "2026-08-28",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Expert Integrative Case",
+    topic: "Post-Cardiac Surgery RV Failure — Mechanical Support Decision-Making",
+    stem: "A 64-year-old is POD#1 s/p mitral valve replacement for severe MR with pre-existing pulmonary hypertension. She develops acute RV failure: CVP 24 mmHg, PAP 45/22 (mean 30), PCWP 12 mmHg, CI 1.6 L/min/m². Echo shows a severely dilated, hypokinetic RV with septal bowing into the LV and preserved LV function. She remains hypoperfused (rising lactate, oliguria) on maximal inotropes (milrinone + low-dose epinephrine) and inhaled pulmonary vasodilator.\n\nGiven this profile, which mechanical support strategy is most physiologically appropriate?",
+    options: [
+      "IABP placement to improve coronary perfusion",
+      "Left-sided pVAD (e.g., Impella) to offload the LV",
+      "Temporary RVAD (surgical or percutaneous) with continued pulmonary vasodilator optimization",
+      "Peripheral VA-ECMO as first-line support"
+    ],
+    correct: 2,
+    explanation: "This is isolated RV failure — high CVP relative to PCWP, septal bowing into the LV (ventricular interdependence reducing LV preload), and preserved LV systolic function. The priority is direct RV mechanical unloading combined with continued afterload reduction via pulmonary vasodilators. IABP offers no direct RV support. A left-sided pVAD doesn't address the RV pathology and could worsen septal shift. Peripheral VA-ECMO increases LV afterload unnecessarily when LV function is preserved and is generally reserved for biventricular failure.",
+    source: null
+  },
+  {
+    id: "bonus1",
+    date: "2026-08-31",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Nephrology in Cardiac Surgery",
+    topic: "Cardiac Surgery–Associated AKI Prevention",
+    stem: "A cardiac surgery program wants to reduce postoperative AKI in high-risk patients identified by an elevated urinary [TIMP-2]×[IGFBP-7] biomarker. In a randomized trial, which perioperative strategy significantly reduced AKI incidence (55.1% vs. 71.7%, P=0.004)?",
+    options: [
+      "Prophylactic statin therapy",
+      "A KDIGO-based care bundle: minimizing nephrotoxic agents, discontinuing ACE inhibitors, avoiding hyperglycemia, and optimizing volume status",
+      "Aggressive intraoperative diuresis",
+      "Preoperative IV albumin"
+    ],
+    correct: 1,
+    explanation: "Statin use specifically was not shown to be of benefit for CSA-AKI prevention — the KDIGO bundle was (PrevAKI trial). CSA-AKI is the second most common cause of AKI in the ICU (behind sepsis), with time on cardiopulmonary bypass as one of the strongest predictors.",
+    source: "Griffin BR, Liu KD, Teixeira JP. Critical Care Nephrology: Core Curriculum 2020. Am J Kidney Dis. 2020;75(3):435-452, p. 443."
+  },
+  {
+    id: "bonus2",
+    date: "2026-09-01",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Nephrology in Cardiac Surgery",
+    topic: "Vasoplegic Shock After Cardiac Surgery",
+    stem: "A patient develops vasodilatory (vasoplegic) shock six hours after CABG — low SVR with preserved cardiac output — refractory to escalating norepinephrine. Which agent has been specifically validated as effective for vasodilatory shock after cardiac surgery, with the added benefit of less atrial fibrillation than catecholamines?",
+    options: [
+      "Dopamine",
+      "Vasopressin",
+      "Dobutamine",
+      "Milrinone"
+    ],
+    correct: 1,
+    explanation: "Vasopressin acts via V1 receptors (nonadrenergic vasoconstriction) and has been specifically validated for post-cardiac-surgery vasoplegic shock, as well as being a catecholamine-sparing second-line agent in septic shock.",
+    source: "Griffin BR, Liu KD, Teixeira JP. Critical Care Nephrology: Core Curriculum 2020. Am J Kidney Dis. 2020;75(3):435-452, p. 439."
+  },
+  {
+    id: "bonus3",
+    date: "2026-09-02",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Nephrology in Cardiac Surgery",
+    topic: "ECMO/CRRT Circuit Integration",
+    stem: "The team is placing CRRT in series with a VA-ECMO circuit for a patient with AKI. To minimize the risk of air or clot entrainment into the ECMO circuit, how should the CRRT circuit be connected?",
+    options: [
+      "CRRT inflow from a pre-pump segment; outflow to a post-oxygenator segment",
+      "CRRT inflow from a post-pump segment; outflow to a pre-oxygenator segment",
+      "Both CRRT inflow and outflow connected pre-pump",
+      "A separate CRRT catheter should always be used instead"
+    ],
+    correct: 1,
+    explanation: "Connecting CRRT inflow to a post-pump segment (higher positive pressure) minimizes air entrainment risk, and returning CRRT outflow to a pre-oxygenator segment lets the oxygenator filter out any air or clots from the CRRT circuit before they reach the patient.",
+    source: "Griffin BR, Liu KD, Teixeira JP. Critical Care Nephrology: Core Curriculum 2020. Am J Kidney Dis. 2020;75(3):435-452, pp. 445-446, Fig. 6."
+  },
+  {
+    id: "thu2",
+    date: "2026-09-03",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Arrhythmia Management",
+    topic: "Torsades de Pointes — Recognition and Management",
+    stem: "A CTICU patient develops a widened, polymorphic, sinusoidal-appearing tachycardia on telemetry, preceded by a premature beat and a compensatory pause. Baseline QT interval was noted to be prolonged. The patient has a pulse but is symptomatic. Serum magnesium is still pending.\n\nWhich treatment is considered first-line for this rhythm, regardless of the pending magnesium level?",
+    options: [
+      "Amiodarone bolus",
+      "IV magnesium sulfate",
+      "Oral beta-blocker",
+      "Overdrive pacing at 60 bpm"
+    ],
+    correct: 1,
+    explanation: "This is torsades de pointes — polymorphic VT with a sinusoidal pattern, typically in the setting of QT prolongation and often triggered by a premature beat with a compensatory pause. IV magnesium sulfate is given regardless of the measured magnesium level. Defibrillation is used if the patient is pulseless; isoproterenol or overdrive pacing (target rate ~100 bpm, not 60) are additional options if magnesium and defibrillation are insufficient.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), p. 464."
+  },
+  {
+    id: "fri2",
+    date: "2026-09-04",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Mechanical Complications of MI",
+    topic: "Acute MR from Papillary Muscle Rupture",
+    stem: "A patient develops sudden pulmonary edema and a new harsh pansystolic murmur radiating to the axilla five days after an inferior-posterior STEMI. Right heart catheterization shows no oxygen step-up between cardiac chambers.\n\nWhich best describes the diagnosis and initial management?",
+    options: [
+      "Free wall rupture — emergent pericardiocentesis",
+      "Acute mitral regurgitation from papillary muscle rupture — afterload reduction and surgical repair",
+      "Ventricular septal defect — afterload reduction alone, no surgery needed",
+      "RV infarction — aggressive diuresis"
+    ],
+    correct: 1,
+    explanation: "Acute MR from papillary muscle rupture is a recognized mechanical complication of MI, with increased risk after inferior-posterior infarcts. It presents with a new pansystolic murmur and pulmonary edema (not an oxygen step-up, which would instead suggest a shunt lesion like VSD). Management is afterload reduction plus surgical repair of the ruptured papillary muscle(s). Free wall rupture instead causes tamponade/PEA arrest; RV infarction presents with hypotension, elevated JVP, and clear lungs — and is treated with fluids, not diuresis.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), p. 452."
+  },
+  {
+    id: "w3mon",
+    date: "2026-09-07",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Diagnostic Testing",
+    topic: "BNP in Heart Failure",
+    stem: "A post-cardiac-surgery patient develops new dyspnea. The team wants to know how useful a normal BNP would be for excluding acute heart failure as a cause.\n\nWhich statement about BNP testing is correct?",
+    options: [
+      "A BNP below the 30–50 pg/mL cutoff has ~97% sensitivity for excluding acute heart failure",
+      "BNP is elevated only in cardiac causes of dyspnea",
+      "Obesity falsely elevates BNP levels",
+      "An elevated BNP always confirms acute decompensated heart failure regardless of renal function"
+    ],
+    correct: 0,
+    explanation: "BNP (and NT-proBNP) are highly sensitive but poorly specific — a normal level makes acute HF unlikely, but an elevated level has many noncardiac causes (renal dysfunction, sepsis, PE, advanced age, COPD, and more). Obesity artificially lowers, not raises, BNP levels, and levels are also affected by renal clearance.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), p. 500, Tables 7-25 and 7-26."
+  },
+  {
+    id: "w3tue",
+    date: "2026-09-08",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Critical Care Nursing — Telemetry Recognition",
+    topic: "Electrolyte-Induced EKG Changes",
+    stem: "A CTICU nurse caring for a hemodialysis-dependent patient notices new tall, peaked T waves with progressive QRS widening on telemetry. A potassium level has been sent but isn't back yet.\n\nWhich electrolyte abnormality is most consistent with this EKG pattern, and what rhythm can it progress to if untreated?",
+    options: [
+      "Hypokalemia — progressing to torsades de pointes",
+      "Hyperkalemia — progressing to a sine-wave pattern and ventricular fibrillation",
+      "Hypercalcemia — progressing to short QT and VF",
+      "Hypomagnesemia — progressing to U waves and AV block"
+    ],
+    correct: 1,
+    explanation: "Tall, peaked T waves with diffuse QRS widening are classic for hyperkalemia, which can progress to ST elevation/depression, a sine-wave QRS pattern, AV block, sinus arrest, or ventricular fibrillation if untreated. Hypokalemia instead causes ST depression, reduced T-wave amplitude, U waves, and QTU prolongation.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), p. 466, Table 7-11."
+  },
+  {
+    id: "w3wed",
+    date: "2026-09-09",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Cardiac/Aortic Surgery",
+    topic: "TEVAR vs. Open Aortic Repair",
+    stem: "A patient with a complicated type B aortic dissection with malperfusion is being evaluated for repair. Compared with open surgical repair, what outcome has been demonstrated with thoracic endovascular aortic repair (TEVAR)?",
+    options: [
+      "Improved long-term mortality compared with open repair",
+      "Reduced 30-day mortality, stroke, and cardiopulmonary complications, without a demonstrated long-term mortality benefit",
+      "Equivalent perioperative outcomes, but significantly higher cost with no other differences",
+      "TEVAR is contraindicated in type B dissections"
+    ],
+    correct: 1,
+    explanation: "TEVAR avoids extensive aortic dissection and cross-clamping, and is associated with reduced 30-day mortality, stroke, and cardiopulmonary complications along with less blood loss and faster recovery compared with open repair — but this perioperative advantage has not translated into a long-term mortality benefit.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 6 (Surgery, Trauma, and Transplantation), p. 389."
+  },
+  {
+    id: "w3thu",
+    date: "2026-09-10",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Acute Coronary Syndrome Management",
+    topic: "NSTEMI — Invasive vs. Conservative Strategy",
+    stem: "A patient presents with NSTEMI. Which finding would most strongly favor an early invasive strategy (catheterization) rather than a conservative strategy?",
+    options: [
+      "Low TIMI risk score and stable symptoms",
+      "Patient preference for medical management",
+      "LVEF <40% with recurrent ischemia despite medical therapy",
+      "Poor candidacy for PCI or CABG due to comorbidities"
+    ],
+    correct: 2,
+    explanation: "Indications favoring an invasive strategy include recurrent/refractory ischemia, elevated troponin or ST-segment deviation, CHF or new MR, hemodynamic instability, recent PCI or prior CABG, LVEF <40%, and a high TIMI risk score (≥4). A low TIMI score, patient/physician preference for medical management, and poor revascularization candidacy all favor a conservative strategy instead.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), p. 451, Table 7-4."
+  },
+  {
+    id: "w3fri",
+    date: "2026-09-11",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Expert Integrative Case",
+    topic: "Post-MI Cardiogenic Shock and Mechanical Complications",
+    stem: "A 58-year-old man presents 3 days after a large anterior STEMI (treated with fibrinolytics only at an outside hospital, no PCI available) with new cardiogenic shock, a new harsh holosystolic murmur, and an oxygen saturation step-up from the right atrium to the pulmonary artery on right heart catheterization. He is transferred to your CTICU.\n\nWhich is the most appropriate next step?",
+    options: [
+      "Initiate afterload reduction and await hemodynamic stabilization before considering intervention",
+      "Urgent surgical repair, with IABP or additional mechanical support as a bridge to surgery",
+      "Emergent isolated PCI of the culprit vessel alone",
+      "Conservative management with diuresis given his multi-day post-MI status"
+    ],
+    correct: 1,
+    explanation: "The oxygen step-up between the right atrium and pulmonary artery, combined with a new murmur and shock, indicates a post-MI ventricular septal defect (VSD) — a surgical emergency with mortality exceeding 70% if untreated. IABP is specifically indicated as a stabilizing bridge to repair/revascularization for acute MR or VSD complicating MI. PCI of the culprit vessel alone does not address the mechanical septal defect, and afterload reduction or diuresis alone are inadequate given the very high untreated mortality — definitive surgical repair is required.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), pp. 451-452 (VSD presentation) and p. 509 (IABP indication for MI-related VSD/MR as bridge to repair)."
+  },
+  {
+    id: "w4mon",
+    date: "2026-09-14",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · ECMO Cannulation",
+    topic: "VA-ECMO Cannulation — Distal Limb Perfusion",
+    stem: "A patient in cardiogenic shock is cannulated for peripheral VA-ECMO via the femoral artery and vein.\n\nWhich additional intervention should be performed at the time of arterial cannulation to reduce the risk of limb ischemia distal to the cannula?",
+    options: [
+      "Systemic anticoagulation alone is sufficient",
+      "Placement of a small distal limb perfusion catheter to restore antegrade flow to the leg",
+      "Elevating the cannulated limb above heart level",
+      "Doppler surveillance of the limb, without any additional catheter placement"
+    ],
+    correct: 1,
+    explanation: "A large-bore femoral arterial cannula can occlude antegrade flow to the leg distal to the insertion site. ELSO's VA-ECMO guideline recommends placing a small distal perfusion catheter (commonly into the superficial femoral artery) at the time of initial cannulation to preserve limb perfusion. Anticoagulation reduces clot risk but does nothing to restore mechanically obstructed arterial inflow. Limb elevation does not address the arterial occlusion. Doppler surveillance is appropriate ongoing monitoring but is not itself a preventive intervention — it detects ischemia after it develops rather than preventing it.",
+    source: "ELSO, Venoarterial ECMO in Adult Cardiac Patients (Interim Guidelines), Cannulation / Distal Limb Perfusion section. https://www.elso.org/Portals/0/files/pdf/ELSO_Interim_Guidelines_for_Venoarterial.2.pdf"
+  },
+  {
+    id: "w4tue",
+    date: "2026-09-15",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Toxicology-Associated ACS",
+    topic: "Cocaine-Associated Acute Coronary Syndrome",
+    stem: "A 34-year-old man presents with chest pain and ECG changes consistent with ACS. Urine toxicology is positive for cocaine.\n\nWhich medication class should be avoided in the initial management of this patient?",
+    options: [
+      "Aspirin",
+      "Nitroglycerin",
+      "Beta-blockers",
+      "Benzodiazepines"
+    ],
+    correct: 2,
+    explanation: "In cocaine-associated ACS, beta-blockade leaves alpha-adrenergic vasoconstriction unopposed (loss of beta-2-mediated vasodilation), which can worsen coronary vasospasm and hypertension. First-line management instead includes oxygen, nitrates, aspirin, and benzodiazepines — the latter reduce central sympathetic outflow and help control the hypertension and tachycardia driving the ischemia. Aspirin, nitroglycerin, and benzodiazepines are all appropriate early therapies here, which is what makes beta-blockers the one to avoid.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), p. 452."
+  },
+  {
+    id: "w4wed",
+    date: "2026-09-16",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Postoperative Arrhythmias",
+    topic: "Bradyarrhythmias After Cardiac Surgery",
+    stem: "A patient is postoperative day 1 from cardiac surgery and develops a new high-grade AV block requiring temporary epicardial pacing.\n\nWhich statement about the risk of this complication is most accurate?",
+    options: [
+      "The risk is equal after CABG and valve surgery, since bradyarrhythmias in this setting are primarily anesthesia-related",
+      "Bradyarrhythmias requiring pacing are more common after valve surgery than after CABG, due to direct surgical injury or edema near the conduction system",
+      "Bradyarrhythmias are more common after CABG, due to conduction ischemia from graft harvesting",
+      "Prolonged cardiopulmonary bypass time is the dominant, uniquely CABG-specific risk factor for postoperative sinus node dysfunction"
+    ],
+    correct: 1,
+    explanation: "The AV node and proximal conduction system lie close to the valve annuli (particularly aortic and mitral), so valve surgery carries a higher risk of direct surgical trauma or perivalvular edema causing postoperative AV block or sinus node dysfunction than CABG does; reported incidence of permanent pacemaker need after cardiac surgery is roughly 0.8–4%. CABG-related bradyarrhythmias are not primarily conduction-ischemia-related in this way, and bypass time is not a CABG-specific mechanism — both CABG and valve cases use bypass. Anesthesia effects do not explain the differential risk between these two surgery types.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 6 (Surgery, Trauma, and Transplantation), p. 384."
+  },
+  {
+    id: "w4thu",
+    date: "2026-09-17",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Aortic Surgery Guidelines",
+    topic: "Type B Aortic Dissection — Complicated Disease and Spinal Cord Protection",
+    stem: "A patient with an acute Type B aortic dissection develops new lower-extremity ischemia and a rising creatinine, consistent with malperfusion. TEVAR is planned, with stent-graft coverage that will extend across the origin of the left subclavian artery (LSA).\n\nWhich additional step is recommended to reduce the risk of postoperative spinal cord ischemia?",
+    options: [
+      "Permissive hypertension alone, without any revascularization procedure",
+      "Left subclavian artery revascularization (e.g., carotid-subclavian bypass or transposition)",
+      "LSA coverage should be avoided in every case regardless of the dissection's anatomic extent",
+      "Spinal drain placement alone, without addressing LSA inflow"
+    ],
+    correct: 1,
+    explanation: "Malperfusion syndrome makes this a complicated TBAD, for which TEVAR — rather than optimal medical therapy alone, which is reserved for uncomplicated TBAD — is the indicated treatment. When planned stent-graft coverage will obstruct antegrade LSA flow, STS guidance recommends LSA revascularization to preserve flow through the vertebrobasilar collaterals that supply the spinal cord, along with left arm perfusion, reducing spinal cord injury risk. Spinal drainage is used as an adjunct in some spinal-cord-protection protocols but does not restore the LSA inflow that coverage removes. Permissive hypertension alone does not address the anatomic flow deficit. Categorically avoiding LSA coverage is not always anatomically feasible; the guideline's answer to required coverage is revascularization, not blanket avoidance.",
+    source: "STS, Clinical Practice Guidelines on the Management of Type B Aortic Dissection (2022), Complicated vs. Uncomplicated TBAD and Left Subclavian Artery Management sections. https://www.sts.org/sites/default/files/content/TBAD_Guideline_2022.pdf"
+  },
+  {
+    id: "w4fri",
+    date: "2026-09-18",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Expert Integrative Case",
+    topic: "VA-ECMO — Recognition and Stepwise Management of LV Distension",
+    stem: "A patient on peripheral VA-ECMO for cardiogenic shock develops worsening pulmonary edema on chest X-ray. Bedside echo shows spontaneous echo contrast ('smoke') in the left ventricle, an aortic valve that remains closed throughout the cardiac cycle, and the arterial line shows a markedly narrowed pulse pressure. The patient is on moderate-dose inotropic support.\n\nWhich of the following is the most appropriate initial step in managing this finding, before escalating to a mechanical LV venting strategy?",
+    options: [
+      "Immediate atrial septostomy",
+      "Immediate percutaneous LVAD (e.g., Impella) placement",
+      "Reduce ECMO flow, add/increase vasodilation, increase PEEP, and optimize inotropic support",
+      "Direct surgical LV apical vent placement"
+    ],
+    correct: 2,
+    explanation: "The clinical picture — pulmonary edema, LV 'smoke,' a closed aortic valve, and a narrow pulse pressure — is LV distension, driven by the elevated LV afterload that peripheral VA-ECMO imposes on a poorly ejecting ventricle. ELSO's VA-ECMO guideline describes a stepwise approach: first attempt to reduce ECMO flow, add or increase afterload-reducing vasodilation, increase PEEP, and optimize inotropy to encourage some native ejection and reopen the aortic valve. Percutaneous LVAD placement, atrial septostomy, and direct surgical apical venting are all legitimate escalation options, but the guideline reserves them for distension that persists despite these first-line, less invasive measures — jumping straight to one of them skips a step and exposes the patient to unnecessary procedural risk.",
+    source: "ELSO, Venoarterial ECMO in Adult Cardiac Patients (Interim Guidelines), LV Distension / Venting section. https://www.elso.org/Portals/0/files/pdf/ELSO_Interim_Guidelines_for_Venoarterial.2.pdf"
+  },
+  {
+    id: "w5mon",
+    date: "2026-09-21",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Foundational Recognition",
+    topic: "TAVR Trial Evidence — Inoperable Patients",
+    stem: "An 84-year-old with severe symptomatic aortic stenosis is deemed inoperable for surgical aortic valve replacement (SAVR) due to prohibitive surgical risk. The heart team is discussing transcatheter aortic valve replacement (TAVR) as an alternative to continued medical management.\n\nBased on the pivotal PARTNER B trial, what did TAVR demonstrate in this population compared to medical management?",
+    options: [
+      "No difference in mortality, but significantly fewer strokes",
+      "Approximately a 20% absolute mortality reduction at 24 months, but with a higher rate of early stroke",
+      "A mortality benefit only in patients under age 75",
+      "Inferiority to medical management due to high rates of paravalvular leak"
+    ],
+    correct: 1,
+    explanation: "In the PARTNER B trial (inoperable patients), TAVR produced roughly a 20% absolute mortality reduction at 24 months compared to medical management, at the cost of a higher rate of early stroke — establishing TAVR as standard of care for patients who are not surgical candidates. Option A is wrong on both counts (there was a mortality benefit, and stroke was higher, not lower, with TAVR); C invents an age cutoff the trial did not use; D mischaracterizes a favorable mortality outcome as inferiority.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), p. 517."
+  },
+  {
+    id: "w5tue",
+    date: "2026-09-22",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Applied Pharmacology / Electrolytes",
+    topic: "Vasopressor-Induced Hyperkalemia",
+    stem: "A 68-year-old on chronic metoprolol undergoes CABG. Intraoperative hypotension is treated with an IV phenylephrine bolus followed by an infusion. In the CTICU that evening, the patient is profoundly weak and unable to generate adequate tidal volumes for extubation. Labs show K+ 6.4 mEq/L (preoperative baseline 4.9 mEq/L), with no other new findings.\n\nWhat is the most likely mechanism driving this patient's hyperkalemia?",
+    options: [
+      "New acute kidney injury from intraoperative hypotension",
+      "Alpha-adrenergic-mediated transcellular potassium shift from phenylephrine, with the protective beta-2-mediated potassium uptake blunted by chronic beta-blockade",
+      "Rhabdomyolysis from prolonged cardiopulmonary bypass",
+      "Succinylcholine-induced hyperkalemia from depolarizing neuromuscular blockade"
+    ],
+    correct: 1,
+    explanation: "Alpha-adrenergic stimulation (phenylephrine) drives potassium out of cells, causing hyperkalemia by transcellular shift — the mirror image of beta-2 stimulation, which drives potassium into cells. Chronic beta-blockade blunts the normal beta-2-mediated buffering response, amplifying the rise. The vignette gives no evidence of AKI (A), rhabdomyolysis (C), or a depolarizing agent (D); the timing and drug exposure point specifically to the alpha-adrenergic mechanism.",
+    source: "Palmer BF, Clegg DJ. \"Physiology and Pathophysiology of Potassium Homeostasis: Core Curriculum 2019.\" AJKD Vol 74, Iss 5, November 2019, p. 688 (Box 1) and Case 1."
+  },
+  {
+    id: "w5wed",
+    date: "2026-09-23",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Diagnostic / Procedural Decision-Making",
+    topic: "Mitral Stenosis Severity and Intervention Choice",
+    stem: "A patient with long-standing rheumatic mitral stenosis is being evaluated for intervention. On exam, the CTICU fellow notes a right ventricular lift, a palpable P2, an opening snap, and a diastolic rumble. Echocardiography shows a thickened, doming anterior mitral leaflet with the classic \"hockey stick\" appearance.\n\nWhich statement correctly relates the exam findings to disease severity, and to the preferred intervention if valve anatomy is favorable?",
+    options: [
+      "A wider S2-to-opening-snap interval indicates more severe stenosis; surgical valve replacement is preferred over balloon valvuloplasty regardless of anatomy",
+      "A shorter S2-to-opening-snap interval indicates more severe stenosis; percutaneous balloon valvuloplasty may be preferred over surgery if anatomy is favorable",
+      "A shorter S2-to-opening-snap interval indicates less severe stenosis; surgery is always first-line for mitral stenosis regardless of anatomy",
+      "The S2-to-opening-snap interval does not correlate with severity; the hockey-stick sign alone determines surgical candidacy"
+    ],
+    correct: 1,
+    explanation: "Mitral stenosis severity correlates inversely with the S2-to-opening-snap interval — a shorter interval reflects higher left atrial pressure and more severe stenosis. Unlike aortic stenosis or mitral regurgitation with LV dysfunction, where surgery is the standard approach, mitral stenosis is the exception in which percutaneous balloon valvuloplasty may be preferred over surgery when valve anatomy is favorable. A and C invert the severity relationship; D ignores the auscultatory finding's prognostic value.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), pp. 514-515."
+  },
+  {
+    id: "w5thu",
+    date: "2026-09-24",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Integrative Evidence-Based Device Strategy",
+    topic: "Escalation of Mechanical Circulatory Support",
+    stem: "A 58-year-old develops progressive cardiogenic shock after a large anterior MI. He is started on an IABP with moderate-dose inotropes. Over the following hours his lactate continues to rise, MAP remains borderline despite escalating vasoactive support, and urine output falls below 20 mL/hr. The team debates adding VA-ECMO now versus further escalating inotropes and observing.\n\nWhich management strategy is best supported by current mechanical circulatory support guidance?",
+    options: [
+      "Continue to escalate inotropes and observe for another 12-24 hours before considering additional mechanical support, since IABP alone typically stabilizes this presentation",
+      "Initiate VA-ECMO as soon as possible given ongoing deterioration despite initial interventions; meta-analysis has shown no added survival benefit from combining IABP with VA-ECMO, though there is a signal for reduced pulmonary edema",
+      "Add a second inotrope and maximize IABP augmentation before considering ECMO, since combination inotrope therapy has been shown to reduce mortality in this setting",
+      "Defer any escalation until a pulmonary artery catheter confirms a low cardiac index, since mechanical circulatory support should never be initiated on clinical and hemodynamic grounds alone"
+    ],
+    correct: 1,
+    explanation: "Guidance on acute mechanical circulatory support supports initiating it as soon as possible in patients with cardiogenic shock who fail to stabilize or continue to deteriorate despite initial interventions — waiting further (A, D) runs counter to this. A meta-analysis of adding IABP to VA-ECMO showed no survival benefit, though there was a signal toward reduced pulmonary edema, so escalating IABP augmentation alone (C) is not an evidence-based substitute for definitive flow support. D also incorrectly implies invasive hemodynamic confirmation is a prerequisite for MCS escalation.",
+    source: "ISHLT/HFSA Guideline on Acute Mechanical Circulatory Support (2023, JHLT 42:4) — sections on timing of MCS initiation in cardiogenic shock, and on IABP as an adjunct to VA-ECMO."
+  },
+  {
+    id: "w5fri",
+    date: "2026-09-25",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Expert Integrative Case",
+    topic: "Low-Flow, Low-Gradient Aortic Stenosis — Diagnostic and Management Pitfalls",
+    stem: "An 80-year-old with known moderate-to-severe aortic stenosis and reduced LVEF (25%) is admitted with acute decompensated heart failure. TTE shows a mean gradient of only 28 mmHg and an aortic valve area of 0.9 cm², leaving the team uncertain whether this represents truly severe AS given the low gradient. The patient remains on a home diuretic and vasodilator regimen, and a beta-blocker was recently started for rate control of new atrial fibrillation.\n\nWhich statement best addresses both the diagnostic uncertainty and a management pitfall in this case?",
+    options: [
+      "The low gradient effectively rules out severe AS regardless of LVEF; continue the current diuretic, vasodilator, and beta-blocker regimen as planned",
+      "Dobutamine stress echocardiography can help unmask the true gradient in low-flow, low-gradient AS with reduced LVEF; diuretics and vasodilators reduce preload in this preload-dependent lesion, and beta-blockade removes the compensatory tachycardia — both of which can worsen hemodynamics",
+      "The echo findings confirm severe AS with certainty; beta-blockade is the treatment of choice to reduce myocardial oxygen demand and should be maximized",
+      "Because LVEF is reduced, the calculated aortic valve area is unaffected by flow state and can be trusted at face value without further testing"
+    ],
+    correct: 1,
+    explanation: "In low-flow, low-gradient AS with reduced LVEF, resting echocardiography can underestimate true stenosis severity; dobutamine stress echocardiography increases flow and can unmask the true gradient and valve area. AS is a preload- and rate-dependent lesion: diuretics and vasodilators drop preload, and beta-blockade removes the compensatory tachycardia that helps maintain cardiac output across a fixed obstruction — both are recognized pitfalls in medical management of AS, not appropriate first-line therapy. A and D wrongly treat a single low-flow measurement as conclusive; C is actively dangerous, since beta-blockade is a pitfall here rather than a treatment of choice.",
+    source: "ATS Review for the Critical Care Boards, 1st ed., Chapter 7 (Cardiovascular), p. 516."
+  },
+  {
+    id: "w6mon",
+    date: "2026-09-28",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Foundational Recognition",
+    topic: "IABP Deflation Timing — Afterload Reduction Mechanism",
+    stem: "An IABP is inflating during diastole and rapidly deflating just before the onset of systole (during isovolumetric contraction).\n\nWhich of the following best describes the primary physiologic benefit of this deflation timing?",
+    options: [
+      "It increases the diastolic pressure gradient to improve renal perfusion",
+      "It reduces the pressure the left ventricle must overcome to open the aortic valve, shortening the high-oxygen-demand isovolumetric contraction phase and lowering myocardial oxygen consumption while improving forward flow",
+      "It primarily augments coronary diastolic perfusion, with no meaningful effect on afterload",
+      "It works by directly increasing myocardial contractility (a positive inotropic effect)"
+    ],
+    correct: 1,
+    explanation: "Rapid balloon deflation immediately before systole drops aortic pressure just as the LV begins to contract, lowering the pressure the ventricle must generate to open the aortic valve — this is the IABP's afterload-reduction effect. Because most myocardial oxygen consumption occurs during the isovolumetric contraction phase (before the aortic valve opens), shortening that phase by enabling earlier valve opening lowers myocardial oxygen demand while improving forward stroke volume. Option A describes a diastolic augmentation effect (from balloon inflation, not deflation); C is wrong because afterload reduction is precisely the deflation effect; D is wrong because the IABP is a purely mechanical, loading-condition device — it has no direct inotropic effect on the myocardium.",
+    source: "Deranged Physiology — \"Benefits of an IABP-assisted decrease in aortic pressure\" (Required Reading, Cardiovascular Intensive Care). https://derangedphysiology.com/main/required-reading/cardiovascular-intensive-care/Chapter-514/benefits-iabp-assisted-decrease-aortic-pressure"
+  },
+  {
+    id: "w6tue",
+    date: "2026-09-29",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Applied Acid-Base / Renal Physiology",
+    topic: "Urine Chloride in Post-Cardiac-Surgery Metabolic Alkalosis",
+    stem: "On postoperative day 3 after CABG, a patient remains on nasogastric suction and a furosemide infusion for diuresis. An ABG shows pH 7.52, PaCO2 48 mmHg, HCO3− 38 mEq/L. A urine chloride returns at 14 mmol/L.\n\nWhat does this urine chloride value indicate, and what is the appropriate next step?",
+    options: [
+      "The urine chloride is uninterpretable while the patient is receiving an active diuretic infusion, so no further workup is possible until it is stopped",
+      "Urine Cl− < 20 mmol/L indicates a chloride-responsive process (volume depletion from NG suction and diuresis); treatment is isotonic saline (with KCl as needed) to restore effective circulating volume and correct the Cl− and K+ deficits — a rising urine Cl− on repeat testing signals adequate repletion",
+      "Urine Cl− < 20 mmol/L indicates a chloride-resistant process such as primary hyperaldosteronism; treatment is spironolactone",
+      "The alkalosis is due to the furosemide alone; the correct treatment is to hold the furosemide and give acetazolamide to directly correct the pH"
+    ],
+    correct: 1,
+    explanation: "A urine chloride < 20 mmol/L identifies the chloride-responsive (saline-responsive) category of metabolic alkalosis, seen with vomiting, NG suction, remote diuretic use, and post-hypercapnic states — the fix is isotonic saline and potassium repletion, not a mineralocorticoid antagonist. A rising urine chloride on serial testing is itself evidence that volume repletion is adequate. Option A is wrong — active diuretic use does shift interpretation toward \"remote\" rather than \"current\" diuretic cause but does not make the test uninterpretable; C describes the chloride-resistant (urine Cl− > 20) category, which is not this patient; D substitutes acetazolamide, a carbonic-anhydrase inhibitor that causes its own non-gap metabolic acidosis, for volume repletion, which is the actual mechanism-directed treatment here.",
+    source: "Do et al. \"Metabolic Alkalosis.\" AJKD Vol 80, Iss 4, October 2022, pp. 546, 548 (urine chloride algorithm, Fig. 6)."
+  },
+  {
+    id: "w6wed",
+    date: "2026-09-30",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Circuit Emergency / Procedural Decision-Making",
+    topic: "Air Embolism Positioning on VA-ECMO — Venous vs. Arterial",
+    stem: "During a VA-ECMO line exchange at the bedside, air is inadvertently entrained into the venous drainage limb of the circuit before it can be clamped. The patient acutely desaturates and becomes hypotensive. There is no suggestion of air entry on the arterial (post-oxygenator) side.\n\nWhich positioning is indicated for this specific scenario while other resuscitative measures (stopping flow without returning blood from the circuit, supplemental oxygen, fluids/vasopressors) proceed?",
+    options: [
+      "Supine, because left lateral recumbent positioning does not prevent embolization from the venous side",
+      "Left lateral recumbent, to keep air trapped in the right ventricle/right heart out of the pulmonary circulation",
+      "Head-down (Trendelenburg) positioning alone, regardless of which limb entrained the air",
+      "Prone, to redistribute air away from the dependent lung fields"
+    ],
+    correct: 1,
+    explanation: "For a witnessed or suspected venous air embolism — as in this case, where air entered the venous limb — left lateral recumbent positioning keeps entrained air trapped in the right ventricle/right heart and out of the pulmonary circulation. This is the opposite of arterial (post-oxygenator) air embolism, where the correct positioning is supine, because left lateral recumbent is insufficient to prevent air from entering the systemic circulation (option A describes the arterial-side answer, not the venous-side scenario given). Head-down positioning is not the discriminating maneuver here and may worsen cerebral edema if cerebral air embolism has already occurred; prone positioning is not a described management strategy for air embolism.",
+    source: "Greenberg ME, Choi ME. \"Hemodialysis Emergencies: Core Curriculum.\" AJKD Vol 77, Iss 5, May 2021, pp. 799-800, Table 3 p. 807 (positioning principle generalizes directly to ECMO/CRRT circuit air entrainment)."
+  },
+  {
+    id: "w6thu",
+    date: "2026-10-01",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Guideline-Based Indication Thresholds",
+    topic: "ELSO Timing/Threshold Criteria for VA-ECMO in Refractory Cardiogenic Shock",
+    stem: "A 62-year-old develops cardiogenic shock 2 hours after an acute anterior STEMI despite maximal inotropic/vasopressor support and an IABP. Current values: SBP 82 mmHg, urine output 15 mL/hr over the last 2 hours, lactate 4.2 mmol/L, SvO2 54%.\n\nAccording to ELSO interim guidance for VA-ECMO in adult cardiac patients, which statement best reflects the recommended approach?",
+    options: [
+      "VA-ECMO should be deferred until the patient has been in refractory shock for at least 24 hours, to confirm that pharmacologic therapy has truly failed",
+      "VA-ECMO should be considered within 6 hours of onset of cardiogenic shock refractory to conventional pharmacologic and fluid therapy; this patient's SBP < 90 mmHg, urine output < 30 mL/hr, lactate > 2 mmol/L, and SvO2 < 60% all meet the guideline's described criteria",
+      "VA-ECMO is contraindicated in this setting because the patient already has an IABP in place",
+      "None of these values meet criteria for VA-ECMO; an SvO2 below 40% would be required first"
+    ],
+    correct: 1,
+    explanation: "ELSO's interim guideline describes considering VA-ECMO within 6 hours of onset of cardiogenic shock refractory to conventional pharmacologic and fluid therapy, with described clinical/hemodynamic features including SBP < 90 mmHg, urine output < 30 mL/hr, lactate > 2 mmol/L, and SvO2 < 60% — all of which this patient meets. Option A invents a 24-hour delay that runs counter to the \"within 6 hours\" guidance; C is incorrect because IABP and VA-ECMO are frequently combined rather than mutually exclusive; D invents an SvO2 threshold well below what the guideline actually describes.",
+    source: "ELSO. \"Interim Guidelines for Venoarterial Extracorporeal Membrane Oxygenation in Adult Cardiac Patients\" (2021), section on clinical features/timing for VA-ECMO consideration in refractory cardiogenic shock. https://www.elso.org/Portals/0/files/pdf/ELSO_Interim_Guidelines_for_Venoarterial.2.pdf"
+  },
+  {
+    id: "w6fri",
+    date: "2026-10-02",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Expert Integrative Case",
+    topic: "MAP Target Selection After Cardiac Surgery — SEPSISPAM Trade-offs",
+    stem: "A 71-year-old with a long-standing history of hypertension develops vasoplegic shock on postoperative day 1 after aortic valve replacement, requiring a norepinephrine infusion. The team is deciding between a standard MAP target of 65-70 mmHg and a higher target of 80-85 mmHg.\n\nWhich statement best reflects the trial evidence on MAP targets and its relevance to this patient?",
+    options: [
+      "A higher MAP target (80-85) reduces mortality in all patients with shock and should be the default target regardless of history",
+      "There was no overall mortality difference between MAP targets, but patients with chronic hypertension had significantly lower rates of AKI/RRT with the higher target (NNT ≈ 9.5 to prevent one patient needing RRT), at the cost of significantly more atrial fibrillation — so the target should account for this patient's premorbid pressures while weighing the added AFib risk",
+      "The trial showed the higher MAP target increases AKI and RRT need in hypertensive patients, so a lower target of 65-70 should always be used in patients with a history of hypertension",
+      "The originating trial enrolled only post-cardiac-surgery patients, so its findings apply directly and unambiguously to this exact scenario without any need for extrapolation"
+    ],
+    correct: 1,
+    explanation: "The SEPSISPAM trial (septic shock requiring vasopressors, not a cardiac surgery population) found no overall mortality difference between a standard (65-70 mmHg) and higher (80-85 mmHg) MAP target, but a subgroup with chronic hypertension had significantly lower rates of AKI and RRT with the higher target (NNT ≈ 9.5), at the cost of significantly more atrial fibrillation in the higher-MAP group — a real trade-off directly relevant to a premorbid-hypertensive post-cardiac-surgery patient who is already at elevated POAF risk. Option A overstates the finding as a universal mortality benefit, which the trial did not show; C reverses the actual AKI/RRT finding (the higher target reduced AKI/RRT in hypertensive patients, not increased it); D is incorrect because SEPSISPAM enrolled septic shock patients, not cardiac surgery patients — extrapolating to this CTICU scenario requires clinical judgment, not direct trial evidence.",
+    source: "SEPSISPAM trial findings as summarized in Moore PK, Hsu RK, Liu KD. \"Management of Acute Kidney Injury: Core Curriculum 2018.\" AJKD Vol 72, Iss 1, July 2018, Blood Pressure Management section. (Original trial: Asfar P, Meziani F, Hamel J-F, et al. \"High versus low blood-pressure target in patients with septic shock.\" N Engl J Med. 2014;370(17):1583-1593.)"
+  },
+  {
+    id: "w7mon",
+    date: "2026-10-05",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Foundational Recognition",
+    topic: "LVAD Blood Pressure Targets — Goal MAP Range",
+    stem: "A patient with a continuous-flow durable LVAD (HeartMate 3) is being monitored in the CTICU. The arterial line shows a mean arterial pressure (MAP) of 108 mmHg on repeated readings, with stable pump speed, flow, and power.\n\nWhich statement best reflects current guideline-based blood pressure management for this patient?",
+    options: [
+      "There is no recommended MAP range for LVAD recipients, because registry data show no relationship between MAP and survival",
+      "The goal MAP is below 60 mmHg, to maximize LV unloading and minimize pump afterload",
+      "A goal MAP of roughly 75–90 mmHg is recommended (2023 ISHLT, Class I); a MAP of 108 mmHg is above goal and warrants treatment of hypertension",
+      "A goal MAP of 100–120 mmHg is recommended to protect end-organ perfusion, because LVAD flow does not depend on afterload"
+    ],
+    correct: 2,
+    explanation: "The 2023 ISHLT mechanical circulatory support guideline gives a Class I (Level of Evidence B) recommendation for a goal MAP of roughly 75–90 mmHg in LVAD recipients. The HFSA expert consensus suggests a similar 70–90 mmHg, and the HeartMate 3 instructions for use call for a MAP below 90 mmHg. A MAP of 108 mmHg is above all of these targets and should be treated. Retrospective INTERMACS registry data showed a bimodal relationship with survival — both low and high MAP were associated with higher mortality — so the aim is a range, not simply \"as low as possible\" (option B is wrong) and not a permissive high pressure (option D is wrong because continuous-flow pump output is afterload-sensitive, so high pressures are not benign). Option A contradicts the registry data. The optimal range specifically in HeartMate 3 recipients has not been defined prospectively; the multicenter BP-LVAD study is ongoing.",
+    source: "The 2023 ISHLT Guidelines for Mechanical Circulatory Support: A 10-Year Update (J Heart Lung Transplant 2023;42(7)) — MAP recommendation (Class I, LOE B), as summarized in \"New Advances in Medical Management of Left Ventricular Assist Devices Recipients.\" Curr Treat Options Cardiovasc Med 2024. https://link.springer.com/article/10.1007/s11936-024-01050-6"
+  },
+  {
+    id: "w7tue",
+    date: "2026-10-06",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Applied Hematology / Anticoagulation",
+    topic: "Biphasic Platelet Fall After CABG — Suspected HIT",
+    stem: "A 64-year-old man is on post-operative day 8 after CABG. His platelet count was 210 ×10³/µL before surgery, fell to 105 on POD 2, recovered to 190 by POD 5, and is now 68. He has received unfractionated heparin (prophylactic dosing and line flushes) since surgery. There is no new thrombosis, no sepsis, and no other apparent cause for the second fall.\n\nWhich of the following is the most appropriate next step?",
+    options: [
+      "Recognize this as the expected post-bypass platelet course, continue current management, and recheck the count in 48 hours",
+      "Transfuse platelets to keep the count above 100 before pursuing any further workup",
+      "Send an anti-PF4/heparin immunoassay but continue heparin until the result returns, because antibody seroconversion is common after cardiac surgery",
+      "Estimate pretest probability with the 4Ts (intermediate-to-high here), stop all heparin, send an anti-PF4/heparin immunoassay (with a functional assay if positive), and start a non-heparin anticoagulant such as argatroban or bivalirudin while awaiting results"
+    ],
+    correct: 3,
+    explanation: "Thrombocytopenia is expected after cardiopulmonary bypass (a typical ~50% fall with a nadir 48–72 hours postoperatively, then recovery). A second, delayed fall after that recovery — here beginning around days 5–8 — is the biphasic pattern that suggests HIT. By the 4Ts this patient scores for magnitude (&gt;50% fall, nadir ≥ 20), timing (day 5–10), and no other apparent cause, which places him at intermediate-to-high probability (4–5 intermediate, 6–8 high). ASH 2018 recommends an immunoassay for intermediate/high probability (with a functional assay if the immunoassay is positive), discontinuing heparin, and starting a non-heparin anticoagulant (argatroban, bivalirudin, danaparoid, fondaparinux, or a DOAC). Option A misses the second fall; B is wrong because ASH suggests against routine platelet transfusion at average bleeding risk; C is wrong because the very high rate of nonpathogenic anti-PF4/heparin antibodies after cardiac surgery (roughly 50% by 30 days, without increased death or thromboembolism) is a reason to interpret the immunoassay with pretest probability and confirmatory testing — not a reason to keep giving heparin when probability is already intermediate-to-high.",
+    source: "Cuker A, et al. American Society of Hematology 2018 guidelines for management of venous thromboembolism: heparin-induced thrombocytopenia. Blood Adv. 2018;2(22):3360-3392 (4Ts-based testing, heparin discontinuation, non-heparin anticoagulants, platelet transfusion). Post-bypass platelet pattern and seroconversion data: \"Heparin-induced thrombocytopenia and cardiovascular surgery.\" Hematology Am Soc Hematol Educ Program. 2021;2021(1):536. https://pmc.ncbi.nlm.nih.gov/articles/PMC8791147/"
+  },
+  {
+    id: "w7wed",
+    date: "2026-10-07",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Circuit Emergency / Procedural Decision-Making",
+    topic: "Differential Hypoxemia (Harlequin) on Femoral VA-ECMO",
+    stem: "A 55-year-old is on femoral VA-ECMO (femoral artery return) at 3.5 L/min after an anterior STEMI. Over the last 24 hours LV ejection has recovered and arterial pulsatility has returned, but the lungs remain severely edematous. A right radial ABG now shows PaO2 46 mmHg and SaO2 80%, while the post-oxygenator PaO2 is above 300 mmHg and the legs are warm and well perfused.\n\nWhich of the following is the most appropriate management?",
+    options: [
+      "Optimize native lung oxygenation (ventilator settings, treatment of pulmonary edema); if upper-body hypoxemia persists, add a jugular venous return cannula (VAV-ECMO) or move the arterial return to the axillary/subclavian artery",
+      "Reduce ECMO flow to the minimum tolerated so that the native lungs are forced to recover",
+      "Increase oxygenator FiO2 and sweep gas flow, because the post-oxygenator PaO2 is the value that determines patient oxygenation",
+      "Disregard the right radial value as a right-arm artifact and follow the leg perfusion and post-oxygenator values"
+    ],
+    correct: 0,
+    explanation: "This is differential oxygenation (Harlequin / North–South syndrome): the lower body is perfused by oxygenated ECMO blood, while the coronaries, brain, and right arm receive poorly oxygenated blood ejected by the recovering LV through failing lungs. The right radial artery and right upper-torso oximetry are the recommended monitoring sites because the right arm is supplied by the first aortic branches, which share the native-ejection blood that perfuses the coronaries and brain. The mixing zone moves proximally with higher ECMO flow and lower native ejection, and drifts into the descending aorta as the LV recovers and flow is weaned. ELSO guidance: optimize ventilation; if that does not resolve it, add a return cannula to the jugular vein (VAV-ECMO). Other described options include axillary/subclavian arterial return, transition to VV-ECMO if myocardial recovery is satisfactory, or moving the femoral drainage cannula toward the SVC. Option B is wrong because lowering flow shifts the mixing zone further down the aorta, worsening upper-body hypoxemia while lung function is poor; C is wrong because the oxygenator is already performing (post-oxygenator PaO2 above 300) — the problem is poorly oxygenated native-lung blood reaching the arch vessels; D is wrong because right radial and right upper-torso values are exactly what ELSO says to use to detect upper-body hypoxemia.",
+    source: "ELSO Interim Guidelines for Venoarterial Extracorporeal Membrane Oxygenation in Adult Cardiac Patients. ASAIO J. 2021;67(8):827-844 — differential oxygenation and monitoring sections (pp. 833-839). Mixing-zone physiology: \"Optimizing PO2 during peripheral veno-arterial ECMO: a narrative review.\" Crit Care 2022. https://link.springer.com/article/10.1186/s13054-022-04102-0"
+  },
+  {
+    id: "w7thu",
+    date: "2026-10-08",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Guideline-Based Indication Thresholds",
+    topic: "VA-ECMO Weaning — Echocardiographic and Hemodynamic Thresholds",
+    stem: "A 49-year-old on peripheral VA-ECMO for fulminant myocarditis has improved clinically and is undergoing a weaning trial. ECMO flow has been reduced stepwise to about 1 L/min, and the following are measured: MAP 72 mmHg, CVP 8 mmHg, LVEF 35%, LVOT VTI 8 cm, and lateral mitral annular peak systolic tissue Doppler velocity (TDSa) 9 cm/s.\n\nWhich interpretation best reflects ELSO interim guidance and published weaning predictors?",
+    options: [
+      "Ready to wean: the LVEF is well above the minimum, so the remaining parameters are secondary",
+      "Uninterpretable: weaning parameters are only valid when measured at full ECMO flow",
+      "Not yet ready: the LVOT VTI of 8 cm is below the threshold of about 10–12 cm (a marker of inadequate forward stroke volume), even though the MAP, CVP, LVEF, and TDSa are acceptable; continue support, optimize, and repeat the trial",
+      "Not yet ready: a TDSa of 9 cm/s is too low, because 15 cm/s or higher is required"
+    ],
+    correct: 2,
+    explanation: "ELSO's interim guideline lists hemodynamic and echocardiographic criteria for successful VA-ECMO weaning: MAP above 60 mmHg, CVP ≤ 10 mmHg, LVEF ≥ 25–30%, TDSa ≥ 6 cm/s, and an adequate LVOT VTI. The derivation study (Aissaoui 2011) used aortic VTI ≥ 10 cm, LVEF above 20–25%, and TDSa above 6 cm/s. These are assessed as flow is lowered in steps (ELSO: by 500 mL every 5–10 minutes) to a minimum of about 1 L/min, or after 3–5 minutes of no support with the circuit clamped. This patient meets the MAP, CVP, LVEF, and TDSa criteria but not the VTI criterion — low forward stroke volume despite a moderately reduced EF means native output is not yet sufficient. Option A is wrong because no single parameter is sufficient; B is wrong because the criteria are applied at minimal flow, not full flow; D is wrong because the threshold is ≥ 6 cm/s, so 9 cm/s passes.",
+    source: "ELSO Interim Guidelines for Venoarterial Extracorporeal Membrane Oxygenation in Adult Cardiac Patients. ASAIO J. 2021;67(8):827-844 — weaning section (pp. 841-842). Aissaoui N, et al. Predictors of successful extracorporeal membrane oxygenation (ECMO) weaning after assistance for refractory cardiogenic shock. Intensive Care Med. 2011;37(11):1738-45, as cited in \"How I approach weaning from venoarterial ECMO.\" Crit Care 2020. https://link.springer.com/article/10.1186/s13054-020-03010-5"
+  },
+  {
+    id: "w7fri",
+    date: "2026-10-09",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Expert Integrative Case",
+    topic: "MOMENTUM 3 — What the Two-Year Data Show for HeartMate 3 vs. HeartMate II",
+    stem: "A 57-year-old with advanced ischemic cardiomyopathy and inotrope dependence is being counseled about durable LVAD options. A trainee says, \"The HeartMate 3 has been proven to improve two-year survival compared with the HeartMate II.\"\n\nWhich response best reflects the two-year MOMENTUM 3 results?",
+    options: [
+      "Correct — two-year survival alone was significantly higher with the HeartMate 3, which is why it replaced the HeartMate II",
+      "Partly correct — the primary composite (survival free of disabling stroke or reoperation to replace or remove a malfunctioning pump) favored the HeartMate 3, driven mainly by far fewer pump replacements or removals (most HeartMate II reoperations were for pump thrombosis or severe hemolysis) and a lower overall stroke rate, but the difference in survival alone was not statistically significant",
+      "Incorrect — the composite benefit was driven by a large reduction in disabling stroke with the HeartMate 3",
+      "Incorrect — the two devices performed similarly on the primary composite at two years, and the HeartMate 3 advantage appeared only with longer follow-up"
+    ],
+    correct: 1,
+    explanation: "In the two-year MOMENTUM 3 analysis, the primary composite — survival free of disabling stroke or reoperation to replace or remove a malfunctioning device — favored the HeartMate 3. The benefit was driven mainly by far fewer device replacements or removals; about two-thirds of HeartMate II reoperations involved pump thrombosis or severe hemolysis. Overall stroke was lower with the HeartMate 3, but disabling stroke rates were similar between devices, so the stroke difference came largely from non-disabling strokes. The survival comparison alone had a hazard ratio whose confidence interval crossed 1, so it cannot be described as a proven survival benefit at two years. Option A overstates the finding; C reverses it (disabling stroke was similar); D is wrong because the composite already favored the HeartMate 3 at two years.",
+    source: "Mehra MR, Goldstein DJ, Uriel N, et al. Two-Year Outcomes with a Magnetically Levitated Cardiac Pump in Heart Failure. N Engl J Med. 2018;378(15):1386-1395, as summarized by TCTMD: https://www.tctmd.com/news/newest-heartmate-3-lv-assist-device-slashes-thrombosis-reoperation-rates-advanced-hf-momentum"
+  },
+  {
+    id: "w8mon",
+    date: "2026-10-12",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Foundational Recognition",
+    topic: "Protamine Reaction After Cardiopulmonary Bypass",
+    stem: "Shortly after protamine administration begins to reverse heparin at the end of a CABG, the patient becomes acutely hypotensive. TEE shows a distended, hypokinetic right ventricle, and the pulmonary artery pressure — previously normal — has risen sharply.\n\nWhich type of protamine reaction does this presentation represent?",
+    options: [
+      "Type I — histamine-mediated systemic hypotension from rapid infusion rate",
+      "Type II — IgE-mediated anaphylaxis, typically presenting with urticaria, bronchospasm, and facial/laryngeal edema",
+      "Type III — catastrophic pulmonary vasoconstriction with acute pulmonary hypertension and right ventricular failure",
+      "An expected, benign hemodynamic response to protamine that requires no intervention"
+    ],
+    correct: 2,
+    explanation: "Type III protamine reactions produce acute, severe pulmonary vasoconstriction and pulmonary hypertension — thought to be driven by complement activation and thromboxane release from heparin-protamine complexes — leading to right ventricular failure and systemic hypotension. Risk is higher in patients with a history of fish allergy, prior NPH/protamine-containing insulin exposure, vasectomy, or pre-existing pulmonary hypertension. Type I (A) is the common, usually benign hypotension from histamine release with rapid infusion, which typically resolves by slowing the infusion rather than causing marked pulmonary hypertension and RV failure. Type II (B) is true IgE-mediated anaphylaxis, dominated by bronchospasm, urticaria, and airway edema rather than isolated acute pulmonary hypertension. Option D is wrong because this picture is a recognized, potentially catastrophic reaction that requires immediate recognition (stopping the infusion, supporting the RV, and considering reheparinization/return to bypass if severe), not observation."
+  },
+  {
+    id: "w8tue",
+    date: "2026-10-13",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Applied Pharmacology",
+    topic: "Milrinone Mechanism in Post-Cardiotomy RV Failure",
+    stem: "A patient develops new right ventricular dysfunction and elevated pulmonary artery pressures immediately after mitral valve repair. The team starts a milrinone infusion rather than escalating a pure catecholamine.\n\nWhat is milrinone's mechanism of action, and why does it make physiologic sense here?",
+    options: [
+      "Phosphodiesterase-3 (PDE3) inhibition increases intracellular cAMP, producing both increased myocardial contractility and pulmonary/systemic vasodilation — an \"inodilator\" effect that reduces RV afterload independent of adrenergic receptors",
+      "Direct beta-1 adrenergic receptor agonism, increasing contractility with no effect on vascular tone",
+      "Selective alpha-1 adrenergic agonism causing peripheral vasoconstriction to support mean arterial pressure",
+      "Direct nitric oxide donation causing pure vasodilation with no inotropic effect"
+    ],
+    correct: 0,
+    explanation: "By inhibiting PDE3, milrinone slows cAMP breakdown, which augments contractility while also causing vasodilation in both the pulmonary and systemic circulations — a combined \"inodilator\" effect that is independent of beta-adrenergic receptor signaling. That makes it useful in post-bypass RV failure and pulmonary hypertension: it lowers RV afterload while supporting contractility, and it remains effective in patients who are relatively catecholamine-desensitized or beta-blocked. B is wrong because milrinone does not act at the beta-1 receptor itself (it acts downstream, on cAMP degradation), and pure beta-1 agonism (e.g., dobutamine) does not by itself reduce pulmonary vascular resistance and carries more arrhythmia risk. C is wrong because milrinone has no alpha-adrenergic activity — in practice it can cause systemic hypotension requiring a vasopressor, the opposite of vasoconstriction. D is wrong because milrinone has a clinically significant positive inotropic effect; it is not a pure vasodilator."
+  },
+  {
+    id: "w8wed",
+    date: "2026-10-14",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Evidence Interpretation / Device Weaning",
+    topic: "Why There Is No Single Echo Cutoff for VA-ECMO Weaning",
+    stem: "A post-cardiotomy patient on peripheral VA-ECMO undergoes a trial-off assessment. At reduced flow, LVOT VTI is 11 cm and LVEF is 28% — just under the figures previously discussed as supportive of weaning (LVOT VTI &gt;12 cm, LVEF ≥25–30%). A fellow asks whether the patient should automatically be denied a wean because of this.\n\nWhat does a 2025 systematic review and meta-analysis of echocardiographic predictors of VA-ECMO weaning conclude?",
+    options: [
+      "Higher LVEF, higher LVOT VTI, and lower E/Ea ratio at trial-off are each associated with weaning success, but absolute cutoffs vary between studies and cannot yet be definitively established — multiple parameters together, not any single echocardiographic number, should guide the decision",
+      "LVEF alone, once above 25%, is a validated and sufficient criterion for weaning in isolation",
+      "LVOT VTI is the only parameter with reproducible supporting evidence; LVEF and diastolic indices add no value",
+      "No echocardiographic parameter has ever been shown to associate with successful weaning, so the decision should rest on clinical gestalt alone"
+    ],
+    correct: 0,
+    explanation: "This systematic review and meta-analysis found LVEF, LVOT VTI, and E/Ea ratio each individually associated with weaning success, but the authors state that absolute cutoffs for these variables \"vary between studies, are based [on] empirical clinical weaning protocols, and therefore cannot yet be elucidated,\" concluding that multiple echocardiographic, hemodynamic, and biochemical parameters — not a single variable — should guide the appropriateness of weaning. That complements, rather than contradicts, the ELSO-style supportive figures: a patient just under one threshold (VTI 11 vs. &gt;12 cm) should not be automatically failed on that number alone. B is wrong because single-parameter sufficiency is specifically what the review argues against. C is wrong because all three parameters were associated with outcome, not just VTI. D is wrong because the parameters do associate with outcome — the review's point is the absence of one universal cutoff, not the absence of any signal.",
+    source: "Hsu HR, Sekhar P, Grover J, et al. \"Predictors of successful weaning from veno-arterial extracorporeal membrane oxygenation (V-A ECMO): A systematic review and meta-analysis.\" PLOS ONE. 2025;20(3):e0310289."
+  },
+  {
+    id: "w8thu",
+    date: "2026-10-15",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Integrative Case (Nephrology / Transplant)",
+    topic: "Why eGFR Misleads After AKI — Heart/Kidney Transplant Workup",
+    stem: "A 56-year-old man with stage D heart failure from ischemic cardiomyopathy, no other comorbidities, has been hospitalized and essentially bedbound for over a month while being evaluated for heart transplant versus combined heart-kidney transplant. Before this admission his eGFRcr was approximately 50 mL/min/1.73m². During the admission he had an AKI episode with eGFRcr falling to 15, which has since risen and been stable at 40 mL/min/1.73m² for the past two weeks. The transplant program's threshold for considering a simultaneous kidney transplant is an eGFR of 30 mL/min/1.73m².\n\nThe heart failure team asks what to do next regarding his GFR assessment before finalizing the listing decision.",
+    options: [
+      "Tell the team he should not receive a kidney transplant, since his current eGFR (40) is above the program's threshold of 30",
+      "Measure cystatin C and compute eGFRcys as the definitive next step",
+      "Perform a 24-hour urine collection for creatinine, urea, and albuminuria (with measured GFR by exogenous marker clearance as another reasonable option), rather than relying on the creatinine-based eGFR alone",
+      "Proceed directly to simultaneous heart-kidney transplant listing, since any GFR recovery following AKI should be considered unreliable and ignored"
+    ],
+    correct: 2,
+    explanation: "Creatinine-based eGFR assumes a steady state and typical creatinine generation, and this patient fits neither assumption well: he has just come through an AKI episode, and after more than a month bedbound his muscle mass — and therefore creatinine generation — is likely reduced, which makes eGFRcr overestimate true GFR. His eGFRcr of 40 may therefore be more optimistic than his actual kidney function, at exactly the point where the number decides a transplant listing. The recommended next step is a directly measured clearance: a timed 24-hour urine collection for creatinine, urea, and albuminuria, with measured GFR by exogenous marker clearance also reasonable (plasma clearance can overestimate true GFR in edematous patients). A is wrong because it treats an unreliable eGFR as a final number. B is wrong because cystatin C has its own non-GFR determinants (inflammation, thyroid disease, steroids, obesity) and is not a validated substitute in critically ill patients with severe heart failure — both eGFRcr and eGFRcys carry large errors against measured GFR in this population. D ignores that a more accurate, direct GFR measurement is both feasible and necessary before a decision with this much at stake.",
+    source: "Inker LA, Titan S. \"Measurement and Estimation of GFR for Use in Clinical Practice: Core Curriculum 2021.\" Am J Kidney Dis. 2021;78(5), Case 5."
+  },
+  {
+    id: "w8fri",
+    date: "2026-10-16",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Expert Integrative Case",
+    topic: "Timing of Surgery in Asymptomatic Chronic Severe Aortic Regurgitation",
+    stem: "A 52-year-old with known chronic severe aortic regurgitation is asymptomatic with normal exercise tolerance. Surveillance echocardiography shows LVEF 58% and LV end-systolic dimension 54 mm (indexed LVESD 27 mm/m² BSA).\n\nPer the 2020 ACC/AHA valvular heart disease guideline, how should this finding be interpreted?",
+    options: [
+      "Surgery is not indicated at all, since the patient is asymptomatic and LVEF is preserved above 55%",
+      "Surgery is a reasonable option despite the absence of symptoms and preserved LVEF, because LVESD exceeds the threshold (&gt;50 mm, or indexed &gt;25 mm/m²) that defines severe LV dilation from chronic volume overload",
+      "Surgery should be deferred until LVEF falls below 55%, since LVESD-based thresholds only apply once EF has already declined",
+      "This patient should simply be followed with serial echocardiograms indefinitely, since no single echocardiographic finding justifies surgery in an asymptomatic patient"
+    ],
+    correct: 1,
+    explanation: "The 2020 ACC/AHA valvular heart disease guideline supports surgery (Class 2a) in asymptomatic patients with chronic severe AR and preserved LVEF once the LV has become significantly dilated from chronic volume overload — LVESD &gt;50 mm, or indexed LVESD &gt;25 mm/m² — as its own indication, independent of whether LVEF or symptoms would separately trigger surgery. The rationale is that waiting for EF to fall or symptoms to appear, as in A and C, risks missing the point at which chronic volume overload has already caused LV remodeling that may not fully reverse after valve surgery; the dilation threshold exists to prompt earlier intervention. D is wrong because the guideline does define specific echocardiographic triggers (LV dimension and function thresholds) at which ongoing surveillance should give way to intervention.",
+    source: "ACC/AHA. 2020 Guideline for the Management of Patients With Valvular Heart Disease — aortic regurgitation section (Class 2a: asymptomatic severe AR with LVESD &gt;50 mm or indexed &gt;25 mm/m²)."
+  },
+  {
+    id: "w9mon",
+    date: "2026-10-19",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Foundational Recognition",
+    topic: "Temporary Epicardial Pacing — Choosing the Mode",
+    stem: "On post-op day 1 after CABG, a patient with temporary atrial and ventricular epicardial wires in place is noted to be in sinus rhythm at 55 bpm with normal, 1:1 AV conduction and a narrow QRS. The patient is hypotensive with cool extremities, consistent with low cardiac output from the bradycardia.\n\nWhich temporary pacing mode is the most appropriate first choice to improve cardiac output?",
+    options: [
+      "VVI pacing at 90 bpm",
+      "AAI pacing at 90 bpm",
+      "DDD pacing at 60 bpm with a long AV delay",
+      "VOO pacing at 100 bpm"
+    ],
+    correct: 1,
+    explanation: "With AV conduction intact, atrial-only pacing (AAI) preserves the atrial kick and lets the patient's own conduction system activate the ventricle, maximizing ventricular filling and synchrony — this is the preferred first-line mode when the problem is sinus bradycardia with normal conduction. VVI paces the ventricle only, discarding the atrial contribution to filling and risking AV dyssynchrony even though it would raise the rate. DDD with a long AV delay adds unnecessary complexity and still risks AV dyssynchrony or wire competition when simple atrial pacing will do the job. VOO is asynchronous ventricular pacing that competes with the intrinsic rhythm and carries R-on-T risk, and like VVI, discards atrial kick entirely."
+  },
+  {
+    id: "w9tue",
+    date: "2026-10-20",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Applied Transfusion Pharmacology",
+    topic: "Viscoelastic (TEG) Pattern-Directed Transfusion",
+    stem: "A patient returns to the CTICU after a complex valve operation with brisk mediastinal chest-tube output. A bedside thromboelastogram (TEG) shows a prolonged R time with a normal angle and a normal maximum amplitude (MA).\n\nBased on this pattern alone, which product should be given first?",
+    options: [
+      "Cryoprecipitate",
+      "Platelets",
+      "Fresh frozen plasma (FFP)",
+      "Protamine"
+    ],
+    correct: 2,
+    explanation: "A prolonged R time reflects delayed clot initiation from a deficiency of soluble clotting factors, which is corrected with FFP (or factor concentrates); the normal angle and normal MA argue against a fibrinogen or platelet-function problem, so cryoprecipitate (which targets a low angle/fibrinogen) and platelets (which target a low MA) are not the first move here. Protamine treats a residual heparin effect, which this pattern does not suggest and which is read off a different (heparinase-corrected) TEG channel. Goal-directed transfusion algorithms that incorporate point-of-care viscoelastic testing carry a Class I, Level B-R recommendation for reducing periprocedural bleeding and transfusion in cardiac surgical patients.",
+    source: "Tibi P, McClure RS, Huang J, et al. STS/SCA/AmSECT/SABM Updated Clinical Practice Guidelines: Patient Blood Management. Ann Thorac Surg. 2021;112:981-1004 — POC Hemostasis Testing section / Table 2 (Transfusion algorithms), Class I, Level B-R, confirmed via a second targeted fetch."
+  },
+  {
+    id: "w9wed",
+    date: "2026-10-21",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Acid-Base Reasoning on Mechanical Support",
+    topic: "Type A vs. Type B Lactic Acidosis on VA-ECMO",
+    stem: "A patient is on peripheral VA-ECMO post-cardiotomy with an appropriately sized flow of 4.5 L/min, MAP 72 mmHg, SvO2 78%, warm extremities, and adequate urine output — reassuring numbers for global perfusion. Despite this, serial lactate has risen from 2.1 to 6.8 mmol/L over the past 12 hours.\n\nWhat is the most appropriate next step?",
+    options: [
+      "Empirically increase ECMO flow, since any rising lactate on ECMO reflects inadequate oxygen delivery until proven otherwise",
+      "Reassure the team that a lactate this high cannot reflect anything other than a cardiac cause",
+      "Recognize that this pattern does not fit classic type A (hypoperfusion) lactic acidosis, and evaluate for type B causes (e.g., thiamine deficiency, hepatic dysfunction, or a contributing medication) while still checking for a regional perfusion problem such as differential hypoxia or limb ischemia",
+      "Treat empirically with intravenous sodium bicarbonate to lower the lactate level directly"
+    ],
+    correct: 2,
+    explanation: "Type A lactic acidosis reflects a clear impairment of tissue oxygen delivery — hypoperfusion, hypoxemia, low flow — which this patient's hemodynamics argue against, so the pattern should prompt consideration of type B causes: systemic oxygenation is preserved, but lactate is still generated or cleared abnormally (thiamine deficiency, hepatic insufficiency, malignancy, or a contributing drug/toxin). Assuming a type A process must be present on ECMO would escalate flow without addressing the actual cause. Reassuring global numbers do not exclude a regional problem — a differential hypoxia/limb malperfusion check is still worthwhile alongside the type B workup. Treating the lab value itself with bicarbonate rather than its cause does not change management.",
+    source: "Fenves AZ, Emmett M. \"Approach to Patients With High Anion Gap Metabolic Acidosis.\" Core Curriculum 2021. Am J Kidney Dis. 2021;78(4), p. 592."
+  },
+  {
+    id: "w9thu",
+    date: "2026-10-22",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Mechanical Circulatory Support Escalation",
+    topic: "Refractory RV Failure After LVAD Implantation",
+    stem: "Six hours after durable LVAD implantation, a patient develops acute right ventricular failure: CVP rising to 22 mmHg, pulmonary artery pressures falling, LVAD flows becoming preload-dependent and labile, and a falling cardiac index despite optimized pump speed, inotropic support, and inhaled pulmonary vasodilator therapy.\n\nWhat is the most appropriate next step?",
+    options: [
+      "Increase LVAD pump speed further to augment left-sided flow and indirectly decompress the right ventricle",
+      "Add vasopressin as the definitive therapy and hold further escalation",
+      "Proceed to temporary mechanical right ventricular support (e.g., a temporary RVAD such as CentriMag or ProtekDuo)",
+      "Convert emergently to peripheral VA-ECMO as the first-line therapy for isolated RV failure"
+    ],
+    correct: 2,
+    explanation: "When maximal medical therapy — inotropes, inhaled pulmonary vasodilators, optimized volume status — fails to support refractory acute RV failure after LVAD implantation, temporary mechanical RV support is the appropriate next step: it directly unloads the RV and buys time for recovery while the new LVAD circuit becomes established. Increasing LVAD speed further is not the fix here — further LV decompression shifts the interventricular septum further leftward, which distorts RV geometry and can impair the septal contribution to RV contraction, worsening rather than relieving RV failure. Vasopressin can be a useful adjunct — it raises systemic and RV coronary perfusion pressure without increasing pulmonary vascular resistance — but it is not a substitute for mechanical support once medical therapy is already maximized and failing. VA-ECMO can provide biventricular support but is generally reserved for combined cardiopulmonary failure or when isolated RV support is insufficient, not chosen first-line for isolated RV failure with an already-functioning LVAD."
+  },
+  {
+    id: "w9fri",
+    date: "2026-10-23",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Applied Quantitative Physiology",
+    topic: "Calculating Oxygen Delivery on VA-ECMO",
+    stem: "A patient on VA-ECMO has a circuit flow of 4.0 L/min, a post-oxygenator (arterial limb) saturation of 100%, and a hemoglobin of 9 g/dL. Using CaO2 (mL O2/dL) ≈ 1.34 × Hgb × SaO2 (ignoring the small dissolved-oxygen term at a normal PaO2), approximately how much oxygen is the ECMO circuit alone delivering per minute?",
+    options: [
+      "~120 mL O2/min",
+      "~240 mL O2/min",
+      "~480 mL O2/min",
+      "~960 mL O2/min"
+    ],
+    correct: 2,
+    explanation: "CaO2 = 1.34 × 9 g/dL × 1.0 = 12.06 mL O2/dL of blood, which converts to about 120.6 mL O2 per liter of blood (dL → L is a ×10 conversion that is the most common source of error in this calculation). Multiplying by the ECMO flow of 4.0 L/min gives a delivered oxygen (DO2) of roughly 480 mL O2/min. The 120 mL/min option reflects forgetting the dL-to-L conversion; 240 and 960 mL/min reflect a simple halving or doubling arithmetic slip rather than a conceptual error. This calculation is the same framework used to judge whether oxygen delivery is adequate relative to the patient's oxygen consumption (VO2) during a weaning trial, and it illustrates that hemoglobin — not only flow — is a direct lever for oxygen delivery on ECMO."
+  },
+  {
+    id: "w10mon",
+    date: "2026-10-26",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Foundational Pharmacology",
+    topic: "The Diuretic \"Braking Phenomenon\"",
+    stem: "A patient is recovering in the CTICU after CABG with significant volume overload. An IV furosemide infusion has been escalated over 48 hours, but urine output has progressively declined despite near-maximal loop-diuretic dosing.\n\nWhat is the best next step, and why?",
+    options: [
+      "Switch from furosemide to an equivalent dose of bumetanide, since tolerance develops to one loop diuretic specifically",
+      "Add a thiazide-type diuretic such as metolazone, since chronic loop-diuretic blockade causes the distal convoluted tubule to upregulate its sodium-chloride cotransporter (NCC), and blocking this compensatory reabsorption restores natriuresis",
+      "Add acetazolamide, since the plateau reflects proximal tubule hypertrophy from chronic loop-diuretic use",
+      "Increase the furosemide infusion rate further, since a high enough loop-diuretic dose will eventually overcome any degree of tubular adaptation"
+    ],
+    correct: 1,
+    explanation: "The \"braking phenomenon\" describes how the initially robust natriuretic response to a loop diuretic wanes as effective circulating volume falls — driven by renin-angiotensin-system activation and compensatory remodeling of the distal nephron: chronic blockade of NKCC2 (the Na⁺-K⁺-2Cl⁻ cotransporter) at the loop of Henle upregulates NCC (the sodium-chloride cotransporter) in the distal convoluted tubule, so more of the sodium that escapes the blocked loop segment gets reabsorbed downstream. Adding a thiazide blocks this compensatory pathway (sequential nephron blockade), which is the physiologic rationale for adding metolazone to maximal-dose loop diuretics. Switching loop diuretics within the same class will not fix this, because braking is a nephron-adaptation phenomenon shared by all loop diuretics, not a drug-specific tolerance. Acetazolamide acts on a different segment (proximal tubule/collecting duct bicarbonate reabsorption) not implicated in this adaptation, and would instead risk a non-gap hyperchloremic metabolic acidosis. Raising the loop-diuretic dose further does not address the actual mechanism, since the plateau reflects downstream tubular compensation, not insufficient dose.",
+    source: "Novak JE, Ellison DH. \"Diuretics in States of Volume Overload: Core Curriculum 2022.\" Am J Kidney Dis. Vol 80, Iss 2, August 2022, p. 272."
+  },
+  {
+    id: "w10tue",
+    date: "2026-10-27",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Applied Hematology / Anticoagulation",
+    topic: "Heparin-Induced Thrombocytopenia After Cardiac Surgery",
+    stem: "On post-op day 5 after CABG, a patient's platelet count has fallen from 210 to 90 ×10⁹/L, and a new lower-extremity DVT is found on ultrasound. The LLL (Lillo-Le Louët) score — a pretest-probability score developed specifically for HIT after cardiopulmonary bypass, where the universal post-op platelet drop makes the general-ICU 4Ts score unreliable — is high, and heparin-induced thrombocytopenia (HIT) antibody testing has been sent but is not yet back. The patient still requires systemic anticoagulation.\n\nWhich is the most appropriate anticoagulant to start now, while confirmatory testing is pending?",
+    options: [
+      "Resume unfractionated heparin at a lower dose until the antibody test result returns",
+      "Start enoxaparin (a low molecular weight heparin) as a heparin-sparing alternative",
+      "Start a non-heparin anticoagulant, such as argatroban or bivalirudin",
+      "Start warfarin immediately to begin definitive long-term anticoagulation"
+    ],
+    correct: 2,
+    explanation: "Once HIT is clinically suspected (as supported here by a high LLL score — the scoring tool validated for this exact post-cardiopulmonary-bypass setting, unlike the 4Ts score, which was derived in general ICU populations and performs poorly against the near-universal post-op platelet dip after cardiac surgery — plus a new thrombotic event), all heparin products must be stopped and avoided, and a non-heparin parenteral anticoagulant — a direct thrombin inhibitor (argatroban or bivalirudin) or a factor Xa inhibitor — is started empirically without waiting for antibody confirmation, since delaying treatment risks ongoing antibody-mediated platelet activation and thrombosis. Even a reduced heparin dose continues to drive the same antibody-mediated process. Low molecular weight heparin cross-reacts with HIT antibodies in vitro and is not a safe substitute. Starting warfarin during the acute thrombocytopenic phase of HIT can precipitate venous limb gangrene or warfarin-induced skin necrosis (from a transient drop in protein C activity before the vitamin K-dependent factors fall); warfarin is only started after platelet count recovery, with adequate overlap on a non-heparin parenteral agent."
+  },
+  {
+    id: "w10wed",
+    date: "2026-10-28",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Applied Pharmacology — Refractory Shock",
+    topic: "Methylene Blue vs. Hydroxocobalamin for Vasoplegic Syndrome",
+    stem: "A patient remains profoundly hypotensive after cardiopulmonary bypass despite high-dose norepinephrine and vasopressin, with a normal-to-high cardiac index and a markedly low systemic vascular resistance — a picture consistent with vasoplegic syndrome. The team adds a third agent that acts directly on the nitric oxide pathway.\n\nWhich best describes the mechanism of methylene blue in this setting?",
+    options: [
+      "Direct stimulation of alpha-1 adrenergic receptors to increase vascular smooth-muscle tone",
+      "Inhibition of guanylate cyclase, blocking the nitric oxide–cGMP signaling pathway responsible for vasodilation",
+      "Direct scavenging of circulating nitric oxide and hydrogen sulfide, preventing their vasodilatory effect",
+      "Agonism at vasopressin V1 receptors, acting as a synthetic vasopressin analog"
+    ],
+    correct: 1,
+    explanation: "Methylene blue inhibits guanylate cyclase, the enzyme that nitric oxide activates to generate cGMP — the second messenger that relaxes vascular smooth muscle — so blocking this enzyme restores vascular tone in nitric-oxide-mediated vasoplegia. Direct scavenging of nitric oxide and hydrogen sulfide describes the mechanism of a different rescue agent, hydroxocobalamin (vitamin B12a), rather than the downstream signaling enzyme that methylene blue blocks; the two agents are frequently confused for exactly this reason. Methylene blue has no direct adrenergic receptor activity — its pressor effect is entirely indirect, via the nitric oxide pathway. It also has no vasopressin-receptor activity and is pharmacologically unrelated to vasopressin."
+  },
+  {
+    id: "w10thu",
+    date: "2026-10-29",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Mechanical Circulatory Support — Trial Evidence",
+    topic: "Escalation of Mechanical Support in the DanGer Shock Trial",
+    stem: "A post hoc analysis of the DanGer Shock trial examined patients with STEMI-related cardiogenic shock who required escalation to a higher level of temporary mechanical circulatory support (tMCS) beyond their originally randomized therapy — comparing patients initially randomized to a micro-axial flow pump (mAFP, e.g., Impella CP) against those randomized to standard of care without upfront mAFP.\n\nWhich statement best reflects that analysis's key finding?",
+    options: [
+      "Escalation to higher-level tMCS occurred more often, and sooner, in patients already supported with an mAFP than in those on standard care",
+      "Patients who required escalation from the standard-of-care arm had the highest 180-day mortality of any group, while mortality among patients escalated from the mAFP arm was similar to that of non-escalated standard-of-care patients",
+      "Baseline lactate predicted the need for escalation equally well in both treatment arms",
+      "Escalation to higher-level tMCS was associated with improved survival in both arms, compared with patients who did not require escalation"
+    ],
+    correct: 1,
+    explanation: "In this post hoc analysis, escalation to higher-level tMCS was less frequent in the mAFP arm (25/179, 14%) than in the standard-of-care arm (35/176, 20%; adjusted OR 0.52, 95% CI 0.30-0.91), and occurred much later when it did happen (median 12 h vs. 0.7 h, p&lt;0.001). Mortality was highest among patients escalated from standard of care (80.0%), while patients escalated from the mAFP arm had a mortality risk (60.0%) comparable to non-escalated standard-of-care patients (53.2%) — suggesting that failing to start with upfront LV unloading, rather than escalation itself, is what tracked with the worst outcomes. This is the opposite of what the first option claims. Baseline lactate predicted escalation in the standard-of-care arm (OR 1.80, 95% CI 1.14-3.13) but not in the mAFP arm (interaction p&lt;0.01). Escalation was associated with higher, not improved, mortality overall (71.7% vs. 48.1% in non-escalated patients). As a single post hoc analysis of one trial, this is hypothesis-generating rather than an established standard of care, and the authors themselves call for future trials to define optimal escalation strategies.",
+    source: "Schrage B, Beske RP, Hassager C, et al. \"Escalation of mechanical circulatory support in patients with STEMI-related cardiogenic shock: a post hoc analysis of the DanGer Shock trial.\" Eur Heart J Acute Cardiovasc Care. 2026;15(6):466-474. doi:10.1093/ehjacc/zuag015."
+  },
+  {
+    id: "w10fri",
+    date: "2026-10-30",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Applied Hemodynamic Monitoring",
+    topic: "Thermodilution Cardiac Output Error in Severe Tricuspid Regurgitation",
+    stem: "A post-cardiac-surgery patient with known severe tricuspid regurgitation has a pulmonary artery catheter in place. A thermodilution cardiac output is measured, but the clinical picture — cool extremities, rising lactate, narrow pulse pressure — suggests more profound hypoperfusion than the number would imply.\n\nWhich statement correctly describes how severe tricuspid regurgitation affects thermodilution cardiac output measurement?",
+    options: [
+      "It typically causes thermodilution cardiac output to be falsely LOW, because recirculation of the cold indicator back and forth across the incompetent valve prolongs and flattens the downstream thermodilution curve, increasing its calculated area relative to the true forward flow",
+      "It has no meaningful effect on thermodilution accuracy",
+      "It typically causes thermodilution cardiac output to be falsely HIGH, because the regurgitant volume adds to the measured forward flow",
+      "It introduces random error with no consistent direction of bias"
+    ],
+    correct: 0,
+    explanation: "In severe tricuspid regurgitation, the injected cold indicator refluxes back and forth across the incompetent valve instead of passing forward as a single, well-defined bolus, which prolongs and flattens (widens) the downstream time-temperature curve. Because the thermodilution algorithm calculates cardiac output as inversely proportional to the area under that curve, a wider, flatter curve computes to a falsely LOW value relative to the true forward flow — which can make a clinician wrongly dismiss a hypoperfused patient's low-normal \"CO\" as reassuring. Tricuspid regurgitation is one of the best-recognized causes of thermodilution error, not a negligible one. The regurgitant fraction does not add to the forward-flow calculation; it is the prolonged curve clearance from recirculation that biases the result low, not high. The bias from tricuspid regurgitation is consistent and directional (toward underestimation), not random — which is exactly why a clinician who knows this should trust another cardiac output method (e.g., Fick, echocardiography) over thermodilution when significant tricuspid regurgitation is present."
+  },
+  {
+    id: "w11mon",
+    date: "2026-11-02",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Foundational Recognition",
+    topic: "Minimally Invasive Valve Surgery — Femoral Cannulation Limb Ischemia",
+    stem: "A patient returns to the CTICU after a right mini-thoracotomy mitral valve repair performed using peripheral (femoral) arterial and venous cannulation for cardiopulmonary bypass. On admission exam, the right foot is cool with a faint dorsalis pedis signal by Doppler, mild pallor, and the patient reports new numbness in the toes.\n\nWhat is the most appropriate immediate action?",
+    options: [
+      "Document the finding and recheck in 4 hours per routine post-op orders",
+      "Notify the team immediately for evaluation of limb ischemia from the femoral arterial cannulation site",
+      "Apply a warm blanket to the limb and reassess in 1 hour",
+      "Elevate the limb and apply compression stockings"
+    ],
+    correct: 1,
+    explanation: "Femoral arterial cannulation for peripheral CPB (used in minimally invasive and robotic valve surgery) obstructs a portion of distal arterial flow and is a recognized cause of limb ischemia. New pallor, coolness, a diminished pulse signal, and numbness distal to a femoral arterial cannulation site are a limb-threatening emergency requiring prompt evaluation (often distal perfusion catheter placement or surgical correction), not deferred reassessment. Warming (C) and compression (D) do not address arterial insufficiency, and compression could worsen ischemia. Routine delayed recheck (A) risks irreversible limb damage. This is the same limb-ischemia vigilance already taught for femoral VA-ECMO cannulation, extended to femoral cannulation for minimally invasive cardiac surgery."
+  },
+  {
+    id: "w11tue",
+    date: "2026-11-03",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Applied Mechanism",
+    topic: "Loop vs. Thiazide Diuretic — Why Loops Cause More Severe Alkalosis",
+    stem: "A CTICU patient on IV furosemide for post-CABG volume overload develops a pH of 7.52 with HCO3− 33 mEq/L. A colleague asks why a loop diuretic produces more severe metabolic alkalosis than a thiazide would at an equivalent natriuretic effort.\n\nWhat is the best physiologic explanation?",
+    options: [
+      "Loop diuretics inhibit NKCC2 in the thick ascending limb, causing greater natriuresis and volume depletion than NCC inhibition by thiazides in the distal convoluted tubule; the resulting greater RAAS activation drives more distal Na⁺-for-H⁺/K⁺ exchange",
+      "Loop diuretics directly stimulate carbonic anhydrase in the proximal tubule, generating more bicarbonate than thiazides do",
+      "Thiazides cause more severe alkalosis than loop diuretics because they act on a larger nephron segment",
+      "Both diuretic classes produce equivalent alkalosis; the difference is due to dosing errors, not mechanism"
+    ],
+    correct: 0,
+    explanation: "Loop diuretics block NKCC2 in the thick ascending limb — a segment that reabsorbs a much larger fraction of filtered sodium than the distal convoluted tubule segment thiazides act on via NCC — producing greater natriuresis and volume contraction. This drives stronger renin-angiotensin-aldosterone activation, increasing distal Na⁺ delivery to the connecting tubule/collecting duct, where ENaC-mediated Na⁺ reabsorption is coupled to H⁺ (H⁺-ATPase) and K⁺ (ROMK) secretion, amplified by aldosterone — producing severe alkalosis. Thiazides cause only mild alkalosis via the same distal mechanism because the volume stimulus is smaller. Carbonic anhydrase stimulation (B) describes the opposite of diuretic action — acetazolamide inhibits carbonic anhydrase and causes acidosis, not alkalosis. Thiazides act on a smaller, not larger, nephron segment (C). The difference is mechanistic, not a dosing artifact (D).",
+    source: "Do et al. \"Metabolic Alkalosis.\" AJKD Core Curriculum 2022, Vol 80, Iss 4 (October 2022), p. 540."
+  },
+  {
+    id: "w11wed",
+    date: "2026-11-04",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Perioperative Management",
+    topic: "Fast-Track Extubation After Routine CABG",
+    stem: "A hemodynamically stable patient underwent an uncomplicated on-pump CABG this morning. At arrival in the CTICU 90 minutes post-op she is normothermic, has minimal chest tube output, a stable rhythm, adequate train-of-four recovery, and is comfortable on a low-dose propofol infusion with a clear ABG.\n\nUnder a fast-track (enhanced recovery) cardiac surgery protocol, what is the most appropriate next step?",
+    options: [
+      "Continue mechanical ventilation and sedation overnight for routine monitoring regardless of readiness",
+      "Begin a systematic extubation-readiness assessment now — hemodynamic stability, normothermia, adequate neuromuscular-blockade reversal, acceptable bleeding, and adequate analgesia — with a goal of extubation within a few hours of arrival",
+      "Extubate immediately with no formal assessment, since the patient appears comfortable",
+      "Delay any extubation-readiness assessment until NPO status is re-evaluated at 24 hours"
+    ],
+    correct: 1,
+    explanation: "Fast-track/enhanced-recovery protocols after routine, low-risk cardiac surgery favor early extubation (typically within a few hours) once objective readiness criteria are met, rather than blanket overnight ventilation — which increases sedation exposure, delirium risk, and length of stay without added safety benefit in low-risk patients. Extubating with no systematic assessment (C) skips verification of readiness and risks reintubation. Routine overnight ventilation regardless of readiness (A) is the outdated default fast-track protocols were designed to replace. NPO status (D) is not a determinant of extubation readiness in this context."
+  },
+  {
+    id: "w11thu",
+    date: "2026-11-05",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Evidence-Based Risk Stratification",
+    topic: "Impella (Micro-Axial Flow Pump) Bleeding vs. Thrombosis — Distinct Predictors",
+    stem: "A 2026 European multicenter cohort of 1,043 patients supported with a micro-axial flow pump (Impella CP or Impella 5, predominantly for AMI-related cardiogenic shock) found that 48% experienced at least one bleeding or thrombotic event during support, and that both bleeding and thrombosis were each independently associated with higher 180-day mortality.\n\nWhich of the following was an independent predictor of thrombosis specifically (and was not reported as a bleeding predictor) in this cohort?",
+    options: [
+      "Post-cardiotomy cardiogenic shock",
+      "Renal replacement therapy at the time of device implantation",
+      "Prior stroke",
+      "Concomitant V-A ECMO as the indication for the pump (used for LV unloading during ECMO)"
+    ],
+    correct: 2,
+    explanation: "Prior stroke was an independent predictor of thrombosis (OR 2.51) and was not reported as a bleeding predictor in this cohort. Post-cardiotomy cardiogenic shock (A) and renal replacement therapy at implantation (B) were independent predictors of bleeding, not thrombosis. Concomitant V-A ECMO as the pump's indication (D) was actually associated with both bleeding (OR 1.65) and thrombosis (OR 2.03) — as was AMI-related cardiogenic shock — making it a predictor of both rather than thrombosis exclusively. This distinction matters clinically: bleeding and thrombotic risk during micro-axial flow pump support have distinct (though overlapping) risk profiles, supporting individualized anticoagulation strategies rather than one default protocol.",
+    source: "Ughetto A, Schrage B, Vandenbriele C, et al. \"Bleeding and thrombotic events during micro-axial flow pump support: A European multicenter cohort study.\" Crit Care. 2026. doi:10.1186/s13054-026-05984-0."
+  },
+  {
+    id: "w11fri",
+    date: "2026-11-06",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Expert Trial Literacy",
+    topic: "STEMI-DTU Trial — When Physiologic Rationale Doesn't Translate",
+    stem: "The STEMI-DTU (Door-to-Unload) trial (JACC, 2026) randomized 527 patients with anterior STEMI without cardiogenic shock (presenting 1–6 h from symptom onset) to either a transvalvular micro-axial flow pump for 30 minutes before PCI (permitting LV unloading before reperfusion) versus immediate PCI alone. The trial was built on preclinical data suggesting that unloading the LV before reperfusion reduces infarct size by lowering wall tension and myocardial oxygen demand during ischemia.\n\nWhat did the trial actually find, and what is the most appropriate clinical takeaway?",
+    options: [
+      "Infarct size (normalized to LV mass) was significantly smaller in the unloading-plus-delayed-PCI group, supporting routine use of mechanical unloading before PCI in anterior STEMI",
+      "Infarct size did not differ significantly between the unloading-plus-delayed-PCI group and immediate PCI alone, and major bleeding/vascular complications were more frequent with unloading — mechanical LV unloading with a delay to reperfusion should not be adopted as routine practice in STEMI without shock based on this trial",
+      "The trial was stopped early for an overwhelming mortality benefit in the unloading arm",
+      "Infarct size was smaller with unloading, but this benefit was offset by an increase in stroke, with no significant effect on bleeding"
+    ],
+    correct: 1,
+    explanation: "Despite a compelling preclinical mechanistic rationale, STEMI-DTU found no significant difference in infarct size normalized to LV mass between the unloading-plus-30-minute-delay group and immediate PCI alone (30.8% vs. 31.9%; mean difference −1.1%; 95% CI −4.2 to 2.0; P=0.50), while major bleeding/vascular complications were more frequent with unloading. This is a key lesson in evidence-based practice: an attractive physiologic hypothesis, supported by preclinical/animal data, did not translate into clinical benefit when tested in an adequately powered RCT, and in fact added procedural risk. A single negative trial like this should prompt caution against adopting unloading-before-PCI as routine care in non-shock anterior STEMI — it is not evidence that unloading is beneficial. Options A and D describe findings that are the opposite of, or unsupported by, the actual results. Option C is false; the trial completed its planned enrollment and was not stopped early for benefit.",
+    source: "Kapur NK, Mangner N, Aghili N, et al. \"Left Ventricular Unloading in Anterior ST-Segment Elevation Myocardial Infarction Without Shock: The STEMI-Door to Unload Randomized Controlled Trial.\" J Am Coll Cardiol. 2026;88(1):76-90. doi:10.1016/j.jacc.2026.03.071."
+  },
+  {
+    id: "w12mon",
+    date: "2026-11-09",
+    day: "Monday",
+    level: 1,
+    levelLabel: "Level 1 · Foundational Recognition",
+    topic: "Post-Cardiac-Surgery Mediastinal Bleeding — Re-Exploration Criteria",
+    stem: "A patient is postoperative day 0 from an on-pump CABG. The CTICU nurse notes mediastinal chest tube output of 220 mL in the first postoperative hour, followed by 230 mL in the second hour, with a stable but slightly tachycardic heart rate and a falling hemoglobin.\n\nWhich output pattern is most consistent with commonly used criteria for prompting surgical re-exploration for postoperative bleeding?",
+    options: [
+      "Chest tube output >200 mL/hr for 2 consecutive hours (or >100 mL/hr for 4 hours, or a sudden output >1000 mL in one hour), interpreted together with the hemodynamic and hemoglobin trend",
+      "Any single hour with >50 mL of output in the first 6 postoperative hours",
+      "A cumulative 12-hour total exceeding 300 mL, regardless of hourly rate",
+      "Chest tube output alone, independent of hemodynamics or hemoglobin, as the sole trigger for return to the operating room"
+    ],
+    correct: 0,
+    explanation: "Commonly used bleeding/re-exploration thresholds after cardiac surgery include a sustained rate such as >200 mL/hr for 2 hours (or >100 mL/hr for 4 hours) or a sudden large-volume output (e.g., >1000 mL in one hour), always interpreted alongside hemodynamics, transfusion requirement, and hemoglobin trend rather than the tube number in isolation — tamponade physiology can occur with a clot obstructing the tube and minimal visible output. Option B describes unremarkable early postoperative drainage, far below any bleeding-emergency threshold. Option C sets a nonspecific, overly low cumulative bar that would flag normal drainage as a false alarm. Option D is wrong because isolating the chest tube number from the clinical context is exactly the pitfall this criterion is designed to avoid — a tamponading clot can silently obstruct the tube while output appears falsely reassuring."
+  },
+  {
+    id: "w12tue",
+    date: "2026-11-10",
+    day: "Tuesday",
+    level: 2,
+    levelLabel: "Level 2 · Applied Physiology",
+    topic: "Ionized vs. Total Calcium — Citrate CRRT and Massive Transfusion",
+    stem: "A post-cardiac-surgery patient on CRRT with regional citrate anticoagulation, who also received a large-volume intraoperative blood transfusion, has a normal serum total calcium but a persistently low bedside ionized calcium despite calcium chloride replacement through the post-filter line.\n\nWhich statement best explains why ionized, not total, calcium is the correct parameter to trend in this scenario?",
+    options: [
+      "Only about half of extracellular calcium normally circulates in the free/ionized, physiologically active form; citrate chelates the ionized fraction directly, and transfusion-related hypoalbuminemia further uncouples ionized from total calcium — so total calcium can look normal while the active fraction is low",
+      "Ionized calcium is simply a more precise assay of the same pool measured by total calcium and carries no independent physiologic meaning",
+      "Citrate anticoagulation depletes total body calcium stores, making total calcium the more sensitive marker of citrate toxicity",
+      "Magnesium, not calcium, is the ion responsible for citrate-related hypocalcemic symptoms, so ionized calcium is really a surrogate for magnesium status"
+    ],
+    correct: 0,
+    explanation: "Of total extracellular calcium, roughly 50% is free/ionized and physiologically active, about 10% is anion-bound, and about 40% is albumin-bound. Citrate chelates the ionized fraction specifically, and hypoalbuminemia from transfusion/volume shifts changes the albumin-bound fraction — both can move independently of the total calcium level, which is exactly why ionized calcium, not total calcium, is the parameter followed during citrate-based CRRT anticoagulation and massive transfusion. Option B is wrong because the two parameters are not interchangeable — only the free fraction is physiologically active, and it can diverge from the total. Option C inverts the mechanism: citrate causes redistribution/chelation of existing calcium, not depletion of total body stores, so total calcium is actually the less sensitive marker here. Option D is incorrect; magnesium is a separate ion (itself about 55% ionized, with no clinical ionized-magnesium assay available) and is not the mechanism of citrate-related ionized hypocalcemia.",
+    source: "Moe SM. \"Disorders of Calcium, Phosphorus, and Magnesium.\" Core Curriculum in Nephrology, AJKD, Vol 45, No 1 (January 2005), p. 214."
+  },
+  {
+    id: "w12wed",
+    date: "2026-11-11",
+    day: "Wednesday",
+    level: 3,
+    levelLabel: "Level 3 · Surgical Evidence",
+    topic: "Bilateral vs. Single Internal Thoracic Artery Grafting — 15-Year Outcomes",
+    stem: "Fifteen-year follow-up from a large multicenter randomized trial (3,102 patients, 28 centers) comparing bilateral versus single internal thoracic artery (ITA) grafting during CABG has now been reported, testing the long-held hypothesis that a second arterial graft confers a durable survival advantage.\n\nWhat did this long-term intention-to-treat analysis find?",
+    options: [
+      "Bilateral ITA grafting significantly reduced 15-year all-cause mortality compared with single ITA grafting",
+      "All-cause mortality at 15 years was essentially identical between the bilateral and single ITA groups (37.8% vs. 37.6%; HR 1.00), with no significant difference on intention-to-treat analysis",
+      "Bilateral ITA grafting increased 15-year mortality, driven by higher rates of sternal wound complications",
+      "The trial was stopped early because of a clear mortality benefit for bilateral grafting, precluding full 15-year follow-up"
+    ],
+    correct: 1,
+    explanation: "On mature, 98%-ascertained 15-year follow-up, all-cause mortality was virtually identical between bilateral (37.8%) and single (37.6%) ITA grafting (HR 1.00, 95% CI 0.89–1.12), and the composite of death/MI/stroke also showed no significant difference — contradicting the hypothesis, drawn from earlier observational data, that a second arterial graft yields a durable survival benefit. The authors note substantial postrandomization crossover (14% of the bilateral group received only one arterial graft; 23% of the single group also received a radial artery graft), which keeps the broader multiple-arterial-graft hypothesis unsettled rather than disproven. Option A states the hypothesis the trial was designed to test, not its actual intention-to-treat result. Option C invents a harm mechanism (sternal wound complications) that the trial did not report — there was no mortality difference in either direction, not a harm signal from bilateral grafting. Option D is false; the trial completed its full prespecified follow-up with results published after 2025, not stopped early.",
+    source: "Taggart DP, et al. \"Long-Term Outcomes Following Bilateral vs Single Internal Thoracic Artery Grafts: A Secondary Analysis of a Randomized Clinical Trial.\" JAMA Cardiol. 2026. doi:10.1001/jamacardio.2026.3232."
+  },
+  {
+    id: "w12thu",
+    date: "2026-11-12",
+    day: "Thursday",
+    level: 4,
+    levelLabel: "Level 4 · Evidence-Based Risk Stratification",
+    topic: "PARTNER 3 — 7-Year Health Status, TAVR vs. SAVR",
+    stem: "Seven-year patient-reported health-status follow-up from the PARTNER 3 trial (low-surgical-risk patients with severe aortic stenosis randomized to TAVR vs. SAVR) tracked Kansas City Cardiomyopathy Questionnaire (KCCQ) scores from baseline through year 7.\n\nWhat pattern did the trial find?",
+    options: [
+      "TAVR patients had durably and significantly better KCCQ scores than SAVR patients at every follow-up time point through 7 years",
+      "TAVR showed a large early health-status advantage (KCCQ difference of +16.2 points at 1 month) that narrowed by 2 years (+1.9 points) and disappeared by years 3–7, with both groups sustaining similar, substantial improvement from baseline long-term",
+      "SAVR patients ultimately had better long-term KCCQ scores than TAVR patients, attributed to more durable valve function",
+      "Neither TAVR nor SAVR produced a meaningful sustained improvement in KCCQ scores compared with baseline"
+    ],
+    correct: 1,
+    explanation: "TAVR's health-status advantage over SAVR was large at 1 month (+16.2 points), much smaller but still present at 2 years (+1.9 points), and not significantly different from years 3 through 7 — both groups sustained substantial, similar improvement from baseline out to 7 years, with roughly 60% of each group achieving an \"excellent\" outcome (alive, KCCQ-overall-summary ≥75, no ≥10-point decline from baseline) at that point. Option A overstates TAVR's advantage as persisting indefinitely, when the data show convergence after year 2. Option C is unsupported — the groups converged rather than reversing in SAVR's favor. Option D is wrong on its face: both approaches produced large, durable improvements relative to baseline — the notable finding is how similar the two approaches become long-term, not an absence of benefit from either.",
+    source: "Brener MI, et al. \"Health Status Outcomes 7 Years After Transcatheter or Surgical Aortic Valve Replacement in Low-Surgical Risk Patients With Aortic Stenosis.\" J Am Coll Cardiol. 2026. doi:10.1016/j.jacc.2026.06.022."
+  },
+  {
+    id: "w12fri",
+    date: "2026-11-13",
+    day: "Friday",
+    level: 5,
+    levelLabel: "Level 5 · Expert Trial Literacy",
+    topic: "TRIC-I-HF — Interpreting a Hierarchical Win-Ratio Endpoint",
+    stem: "A randomized trial of transcatheter tricuspid-valve repair plus medical therapy versus medical therapy alone, in patients with symptomatic severe tricuspid regurgitation at increased risk for heart-failure events, used a hierarchical composite first primary endpoint (death, then HF hospitalization, then quality-of-life change) assessed by win ratio, reporting a win ratio of 2.42 favoring repair.\n\nWhich statement correctly interprets this result and the win-ratio methodology?",
+    options: [
+      "A win ratio of 2.42 means the repair group had a 2.42% absolute reduction in mortality compared with medical therapy",
+      "The win ratio compares every patient in one arm against every patient in the other arm across a prioritized outcome hierarchy — worse outcome first, ties passed to the next tier — and a ratio of 2.42 means repair-group patients were, in aggregate pairwise comparisons, about 2.4 times as likely to have a better outcome as a worse one versus medical therapy",
+      "Because the win ratio favored repair, the trial proves transcatheter tricuspid repair reduces all-cause mortality specifically, independent of heart-failure hospitalization or quality-of-life changes",
+      "A win ratio greater than 1 is not interpretable without an accompanying absolute risk difference, so this result cannot inform practice until a mortality-only trial is performed"
+    ],
+    correct: 1,
+    explanation: "The win ratio is a hierarchical pairwise-comparison statistic: each treated patient is matched against each control patient and compared first on the most clinically important outcome (death), with ties passed down to the next tier (HF hospitalization, then quality-of-life change); the ratio of total \"wins\" to total \"losses\" across all pairs is the win ratio, so 2.42 means repair-group patients won their pairwise comparisons roughly 2.4 times as often as they lost — it is not a percentage and not an absolute risk reduction. The trial's second primary endpoint (a simple time-to-event composite of death or HF hospitalization through 3 years, HR 0.40) is interpretable in ordinary hazard-ratio terms and reinforces the hierarchical result, but the composite win-ratio finding by itself does not isolate a mortality-specific effect, since the 360-patient trial was not powered to detect mortality alone and the composite is driven substantially by its hospitalization and quality-of-life components. Option A confuses a ratio with an absolute percentage-point difference — these are not interchangeable, and the win ratio does not directly state absolute event rates. Option C overclaims a mortality-specific effect that this hierarchical composite design cannot isolate on its own. Option D is wrong: the win ratio is an accepted, pre-specified, clinically interpretable statistic designed precisely for situations like this, where fatal and non-fatal/patient-reported outcomes must be combined into one prioritized endpoint — it is not uninterpretable or invalid.",
+    source: "Hausleiter J, et al. \"Tricuspid-Valve Intervention in Heart Failure.\" N Engl J Med. 2026. doi:10.1056/NEJMoa2606934 (TRIC-I-HF trial, ClinicalTrials.gov NCT04634266)."
+  }
+];
+
+const STORAGE_KEY = "cticu_dq_answers_v1";
+
+function loadAnswers() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+  } catch(e) { return {}; }
+}
+function saveAnswer(id, choiceIdx) {
+  const answers = loadAnswers();
+  answers[id] = choiceIdx;
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(answers)); } catch(e) {}
+}
+
+// Local calendar date as YYYY-MM-DD (avoids UTC offset shifting the day)
+function todayISO() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+// Monday (YYYY-MM-DD) of the week containing the given ISO date. Weeks run Mon-Sun,
+// so Sat/Sun still resolve back to that same week's Monday (access persists through
+// the weekend and only locks out once the *next* Monday arrives).
+function mondayOfWeek(iso) {
+  const d = new Date(iso + "T00:00:00");
+  const dow = d.getDay(); // 0=Sun..6=Sat
+  const daysSinceMonday = (dow + 6) % 7;
+  d.setDate(d.getDate() - daysSinceMonday);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+// Full sorted list of all scheduled questions, past and future.
+const SCHEDULE = QUESTIONS.slice().sort((a, b) => a.date.localeCompare(b.date));
+
+function findQuestionForDate(iso) {
+  return SCHEDULE.find(q => q.date === iso) || null;
+}
+
+// Access policy: only today's question, plus any missed questions from Monday of the
+// current week through today. Nothing from prior weeks, and nothing from future dates —
+// those are simply not shown, not just disabled.
+function getVisibleSchedule() {
+  const today = todayISO();
+  const monday = mondayOfWeek(today);
+  return SCHEDULE.filter(q => q.date >= monday && q.date <= today);
+}
+
+// Pick which question to show by default: today's if scheduled, otherwise the most
+// recent one still within this week's visible window.
+function getDefaultId(visible) {
+  if (!visible.length) return null;
+  const today = todayISO();
+  const todayQ = visible.find(q => q.date === today);
+  if (todayQ) return todayQ.id;
+  return visible[visible.length - 1].id;
+}
+
+let currentId = getDefaultId(getVisibleSchedule());
+
+function buildNav(visible) {
+  const nav = document.getElementById("dayNav");
+  nav.innerHTML = "";
+  // Only show the catch-up strip when there's more than one day to choose from —
+  // on a Monday (or the first day of content) it's just today's single question.
+  nav.style.display = visible.length > 1 ? "flex" : "none";
+  const answers = loadAnswers();
+  visible.forEach(q => {
+    const btn = document.createElement("button");
+    const d = new Date(q.date + "T00:00:00");
+    const label = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    btn.textContent = `${q.day.slice(0,3)} ${label}`;
+    btn.dataset.id = q.id;
+    if (q.id === currentId) btn.classList.add("active");
+    if (answers.hasOwnProperty(q.id)) btn.classList.add("done");
+    btn.addEventListener("click", () => { currentId = q.id; render(); });
+    nav.appendChild(btn);
+  });
+}
+
+// Show only the difficulty portion of the label ("Level 4") — the topic
+// half of the old label gave away the subject of the question before answering.
+function levelOnly(label) {
+  return String(label).split("·")[0].trim();
+}
+
+function buildTodayBanner(visible) {
+  const banner = document.getElementById("todayBanner");
+  const today = todayISO();
+  const now = new Date();
+  const dateStr = now.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+  const todayQ = findQuestionForDate(today);
+
+  if (todayQ) {
+    banner.textContent = `Today is ${dateStr}. Today's question is below.`;
+  } else if (visible.length) {
+    banner.textContent = `Today is ${dateStr} — no new question today. You can still catch up on this week's question(s) below before Monday.`;
+  } else {
+    banner.textContent = `Today is ${dateStr}. No question has been published yet this week — check back soon.`;
+  }
+}
+
+function render() {
+  const visible = getVisibleSchedule();
+  if (currentId === null || !visible.some(q => q.id === currentId)) {
+    currentId = getDefaultId(visible);
+  }
+  buildNav(visible);
+  buildTodayBanner(visible);
+  const card = document.getElementById("quizCard");
+
+  if (!currentId) {
+    card.innerHTML = `<div class="stem">No question is available yet this week. Check back soon.</div>`;
+    return;
+  }
+
+  const q = QUESTIONS.find(x => x.id === currentId);
+  const answers = loadAnswers();
+  const alreadyAnswered = answers.hasOwnProperty(q.id);
+
+  let optionsHtml = "";
+  q.options.forEach((opt, idx) => {
+    optionsHtml += `
+      <label class="option" data-idx="${idx}">
+        <input type="radio" name="opt" value="${idx}" ${alreadyAnswered ? "disabled" : ""}>
+        <span>${opt}</span>
+      </label>`;
+  });
+
+  card.innerHTML = `
+    <div class="meta-row">
+      <span class="level-badge">${levelOnly(q.levelLabel)}</span>
+      <span class="day-label">${q.day}, ${new Date(q.date + "T00:00:00").toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+    </div>
+    <div class="stem">${q.stem}</div>
+    <div class="options" id="optionsList">${optionsHtml}</div>
+    <button class="submit" id="submitBtn" ${alreadyAnswered ? "disabled" : ""}>${alreadyAnswered ? "Already Answered" : "Submit Answer"}</button>
+    <div class="feedback" id="feedback"></div>
+  `;
+
+  if (alreadyAnswered) {
+    showFeedback(q, answers[q.id]);
+  }
+
+  const optionEls = card.querySelectorAll(".option");
+  optionEls.forEach(el => {
+    el.addEventListener("click", () => {
+      if (alreadyAnswered) return;
+      optionEls.forEach(o => o.querySelector("input").checked = false);
+      el.querySelector("input").checked = true;
+    });
+  });
+
+  const submitBtn = document.getElementById("submitBtn");
+  submitBtn.addEventListener("click", () => {
+    const checked = card.querySelector('input[name="opt"]:checked');
+    if (!checked) { return; }
+    const choiceIdx = parseInt(checked.value, 10);
+    saveAnswer(q.id, choiceIdx);
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Already Answered";
+    optionEls.forEach(o => o.querySelector("input").disabled = true);
+    showFeedback(q, choiceIdx);
+    buildNav(getVisibleSchedule());
+  });
+}
+
+function showFeedback(q, choiceIdx) {
+  const card = document.getElementById("quizCard");
+  const optionEls = card.querySelectorAll(".option");
+  optionEls.forEach((el, idx) => {
+    if (idx === q.correct) el.classList.add("correct");
+    else if (idx === choiceIdx) el.classList.add("incorrect");
+    el.classList.add("disabled");
+  });
+  const isRight = choiceIdx === q.correct;
+  const fb = document.getElementById("feedback");
+  fb.classList.add("show", isRight ? "right" : "wrong");
+  fb.innerHTML = `
+    <div class="fb-title ${isRight ? "right" : "wrong"}">${isRight ? "Correct" : "Incorrect — correct answer highlighted above"}</div>
+    <div class="explanation">${q.explanation}</div>
+    ${q.source ? `<div class="source">Source: ${q.source}</div>` : `<div class="no-source">No specific source cited — based on general clinical knowledge.</div>`}
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
